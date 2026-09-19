@@ -697,7 +697,7 @@ export async function runEmployeeTurn(
       decisionsMemory,
       learning.block,
       qualityCriteria[data.employeeId]?.length
-        ? `## معايير قبول الرد\n${(qualityCriteria[data.employeeId] ?? []).map((criterion, index) => `${index + 1}) ${criterion}`).join("\n")}`
+        ? `## معايير قبول الرد (راجعها بنداً بنداً قبل أن تكتب، ثم مرة أخيرة قبل التسليم)\n${(qualityCriteria[data.employeeId] ?? []).map((criterion, index) => `${index + 1}) ${criterion}`).join("\n")}`
         : "",
       ...sharedSystemBlocks({
         employeeId: data.employeeId,
