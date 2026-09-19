@@ -54,6 +54,7 @@ import planFlowTall from "@/assets/product/plan-flow-tall.png";
 import adsVisual from "@/assets/product/ads-visual.png";
 import proofVisual from "@/assets/product/proof-visual.png";
 import { VerifiedBadge } from "@/components/site/VerifiedBadge";
+import danaStory from "@/assets/sample/dana-cold-coffee-story.jpg";
 
 type DemoPhase = "idle" | "thinking" | "draft" | "approved";
 
@@ -217,12 +218,18 @@ const sampleBoards = [
         icon: Instagram,
         kind: "منشور إنستجرام",
         employee: "سِراج",
+        quality: 82,
+        image: null as string | null,
+        actions: ["اربط إنستجرام", "انشر الآن", "جدولة"],
         body: "### المنشور\nلعشاق القهوة الباردة في جدة… من ٤ إلى ٧، أي مشروب بارد من قهوتنا المختصة بـ١٩ ريال.\n\nخلّ حرارة جدة برا، وبرّد يومك بخيارك المفضل يومياً طوال الأسبوع.\n\nشاهد الخيارات في الصورة، ومرّ علينا قبل ٧ واطلب مشروبك.\n\n### الهاشتاقات\n#قهوة_مختصة #قهوة_باردة #جدة\n\n### التوقيت والقياس\n- النشر: ٣:٣٠ عصراً بتوقيت جدة؛ قبل بداية العرض بنصف ساعة.\n- القياس بعد ٤٨ ساعة: نسبة المشاركات إلى الوصول.",
       },
       {
         icon: Sparkles,
         kind: "بريف تصميم ستوري",
         employee: "دانة",
+        quality: 82,
+        image: danaStory as string | null,
+        actions: ["اربط إنستجرام", "انشر الآن", "جدولة"],
         body: "### الاتجاه البصري\n- كوب قهوة باردة مكثّف القطرات يحتل ٤٠٪ من الإطار، بإضاءة مسائية دافئة وخلفية بنية هادئة.\n- السعر ١٩ ريال هو العنصر الأكبر، ثم الوقت، ثم الموقع والدعوة.\n\n### المواصفات\n- ستوري إنستجرام ١٠٨٠×١٩٢٠ بكسل؛ خالٍ من النص أول ٢٥٠ بكسل وآخر ٣٢٠ بكسل.\n- الألوان: بني داكن #2B1D17، كريمي #FFF4DF، كراميل #D6A15C بنسبة ٦٠/٣٠/١٠.\n- التباين المحسوب ١٤٫٩:١ — يحقق WCAG AA.",
       },
     ],
@@ -235,6 +242,9 @@ const sampleBoards = [
         icon: SearchCheck,
         kind: "فقرة مقال + حزمة سيو",
         employee: "نور",
+        quality: 72,
+        image: null as string | null,
+        actions: ["اعتماد", "نشر إلى المدوّنة"],
         body: "# كيف تختار هدية عملية بأقل من 200 ريال تترك أثراً حقيقياً؟\n\nاختيار هدية عملية بميزانية اقتصادية لا يعني أبداً التنازل عن القيمة أو الذوق. ركّز على ثلاثة معايير: أن تخدم روتيناً يومياً للمتلقي، وتأتي بجودة تصنيع مناسبة للاستعمال المتكرر، وتُقدَّم بأسلوب أنيق يرفع قيمتها البصرية.\n\n### حزمة السيو المرافقة\n- عنوان الميتا: كيف تختار هدية عملية بأقل من 200 ريال؟ دليل خطوة بخطوة\n- الرابط اللطيف: practical-gifts-under-200-sar\n- البيانات المنظمة: Article مدمجة مع FAQPage",
       },
     ],
@@ -247,6 +257,9 @@ const sampleBoards = [
         icon: MessageCircle,
         kind: "رد واتساب على عميل",
         employee: "سالم",
+        quality: 82,
+        image: null as string | null,
+        actions: ["اعتماد", "إرسال الرد"],
         body: "الموضوع: استفسار موعد تنظيف الأسنان\n\nحياك الله، سعر تنظيف الأسنان يعتمد على نوع التنظيف المطلوب، ونوضح لك السعر المعتمد قبل تثبيت الحجز، وفي حال احتاجت اللثة تنظيفًا عميقًا يحدد الطبيب التكلفة بعد الفحص. بخصوص حجز موعد، يحتاج التوافر إلى مراجعة الجدول؛ لتحديد أقرب موعد متاح لك، هل تفضل الفترة الصباحية أم المسائية؟",
       },
     ],
@@ -738,6 +751,22 @@ export function EditorialHomepage() {
                           ),
                         )}
                       </div>
+                      {card.image ? (
+                        <figure className="sahl-sample-media">
+                          <img src={card.image} alt="الصورة التي ولّدتها دانة لستوري العرض" loading="lazy" />
+                        </figure>
+                      ) : null}
+                      <footer className="sahl-sample-actions">
+                        <span className="sahl-sample-quality">جودة {card.quality}٪</span>
+                        <span className="sahl-sample-pending">بانتظار اعتمادك</span>
+                        <div>
+                          {card.actions.map((a) => (
+                            <button key={a} type="button" disabled>
+                              {a}
+                            </button>
+                          ))}
+                        </div>
+                      </footer>
                     </article>
                   );
                 })}

@@ -44607,3 +44607,60 @@ html {
   display: block;
   height: 10px;
 }
+.sahl-sample-media {
+  margin: 0 17px 4px;
+  border: 1px solid hsl(28 20% 90%);
+  border-radius: 12px;
+  overflow: hidden;
+  background: hsl(34 30% 96%);
+}
+.sahl-sample-media img {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+}
+.sahl-sample-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 12px 15px;
+  border-top: 1px solid hsl(28 20% 91%);
+  background: hsl(34 44% 97.5%);
+}
+.sahl-sample-quality {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: hsl(140 34% 92%);
+  color: hsl(152 40% 24%);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+.sahl-sample-pending {
+  color: hsl(24 12% 44%);
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+.sahl-sample-actions div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-inline-start: auto;
+}
+.sahl-sample-actions button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid hsl(28 20% 86%);
+  background: #fff;
+  color: hsl(24 20% 22%);
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: default;
+}
+.sahl-sample-actions button:first-child {
+  border-color: transparent;
+  background: hsl(16 52% 44%);
+  color: #fff;
+}
