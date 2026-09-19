@@ -662,7 +662,9 @@ export function PublishPanel({
           onRemove={dropMedia}
           onError={(url) => {
             dropMedia(url);
-            setNote("أُزيلت وسيطة تعذّر تحميلها. يمكنك رفع بديل أو توليد صورة جديدة.");
+            setNote(
+              "تعذّر عرض الصورة فحذفناها من المنشور. ارفع صورة من عندك أو اضغط «ولّد صورة من نص المنشور».",
+            );
           }}
         />
       </div>

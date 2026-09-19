@@ -11,7 +11,7 @@ import { freeChat, gatherEvidence, planResearch } from "./nour-research.server";
 import { withBudget } from "./seo-research.server";
 import { memoryBlock } from "./memory.server";
 import { actionTruthRules, sanitizeActionClaims } from "./action-claims";
-import { sharedSystemBlocks } from "./team-knowledge";
+import { sharedSystemBlocks, governanceBlocks } from "./team-knowledge";
 import { playbookFor } from "./playbooks";
 import { ambientPulse, nowBlock, timezoneForCountry } from "./live-context.server";
 
@@ -867,6 +867,7 @@ export async function executeSkill(
       params.employeeId,
       `${params.skillId} ${Object.values(params.values ?? {}).join(" ")}`,
     ),
+    ...governanceBlocks(params.employeeId),
     qualityCriteria[params.employeeId]?.length
       ? `## معايير قبول المخرج (راجعها بنداً بنداً قبل التسليم)\n${(qualityCriteria[params.employeeId] ?? []).map((criterion, index) => `${index + 1}) ${criterion}`).join("\n")}`
       : "",

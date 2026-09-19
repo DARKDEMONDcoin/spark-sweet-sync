@@ -17,6 +17,7 @@ import {
   researchFor,
 } from "@/lib/nour-run.server";
 import { employeeDirectory, sharedSystemBlocks, type EmployeeId } from "@/lib/team-knowledge";
+import { governanceBlocks } from "@/lib/team-knowledge";
 import { scopeBoundaryBlock } from "@/lib/scope-boundaries";
 import { employeeEdgeBlock } from "@/lib/employee-edge";
 import { frontierEdgeBlock } from "@/lib/frontier-edge";
@@ -664,6 +665,8 @@ export async function runEmployeeTurn(
       `أنت ${persona.name}، ${persona.role}`,
       `تعمل داخل منصة «سهل» لصالح العلامة: ${workspace.name} (${workspace.industry}).`,
       `نبرة العلامة: ${workspace.tone}.`,
+      // الحاكمان أولاً: سلّم السلطة ثم الالتزام القانوني — كل ما بعدهما محكوم بهما.
+      ...governanceBlocks(data.employeeId),
       nowBlock(timezone, ws.country),
       intentBlock(intent),
       answerPolicyBlock(data.employeeId, intent),
@@ -694,7 +697,7 @@ export async function runEmployeeTurn(
       decisionsMemory,
       learning.block,
       qualityCriteria[data.employeeId]?.length
-        ? `## معايير قبول الرد\n${(qualityCriteria[data.employeeId] ?? []).map((criterion, index) => `${index + 1}) ${criterion}`).join("\n")}`
+        ? `## معايير قبول الرد (راجعها بنداً بنداً قبل أن تكتب، ثم مرة أخيرة قبل التسليم)\n${(qualityCriteria[data.employeeId] ?? []).map((criterion, index) => `${index + 1}) ${criterion}`).join("\n")}`
         : "",
       ...sharedSystemBlocks({
         employeeId: data.employeeId,
@@ -736,7 +739,7 @@ export async function runEmployeeTurn(
         ? "## بنية رد نور\nلطلبات السيو والمحتوى رتّب الرد هكذا: **الخلاصة** ← `### الوضع الحالي` (أرقام الفحص) ← `### الفرص` (جدول كلمات/صفحات مع الحجم والصعوبة والنية) ← `### المنافسون` (ما يفعلونه وما ينقصك) ← `### خطة التنفيذ` (مرتبة بالأثر لا بالترتيب الزمني فقط) ← `### الخطوة التالية`. اذكر مصدر كل رقم بإيجاز (فحص الموقع / بحث الكلمات / Search Console)، وإن غاب مصدر قل ذلك بصراحة في سطر واحد بدل تخمين الأرقام."
         : "",
       data.employeeId === "sonny" && intent === "work"
-        ? "## بنية رد سِراج\nلطلبات المحتوى والنشر رتّب الرد هكذا: **الخلاصة** (الزاوية والهدف في سطر) ← `### المنشور` (النص الجاهز حرفياً كما يُنشر، بلا شرح داخله) ← `### الهاشتاقات` (بطبقات) ← `### الصورة/الفيديو` (سطر واحد عربي عمّا سيظهر + سطر «نص بديل:» يصف الصورة، والوصف الإنجليزي في image_prompt فقط) ← `### التوقيت والقياس` (وقت النشر بتوقيت الجمهور + مؤشر واحد يُقاس بعد 48 ساعة) ← `### الخطوة التالية`. لخطة أو عدة منشورات: جدول Markdown (اليوم | المنصة | الزاوية | نوع المخرج | وقت النشر) ثم النصوص الكاملة في المخرجات. أضف `### تنبيه` بسطر واحد فقط عند وجود خطر فعلي (ادعاء غير موثّق طلبه المستخدم، مجال حسّاس، أزمة، محتوى مدفوع بلا إفصاح، افتراض جوهري بنيت عليه)."
+        ? "## بنية رد سِراج\nلطلبات المحتوى والنشر رتّب الرد هكذا: **الخلاصة** (الزاوية والهدف في سطر) ← `### المنشور` (النص الجاهز حرفياً كما يُنشر، بلا شرح داخله) ← `### الهاشتاقات` (بطبقات) ← `### الصورة/الفيديو` (سطر واحد عربي عمّا سيظهر + سطر «نص بديل:» يصف الصورة، والوصف الإنجليزي في image_prompt فقط) ← `### التوقيت والقياس` (وقت النشر بتوقيت الجمهور + مؤشر واحد يُقاس بعد 48 ساعة) ← `### الخطوة التالية`. ثلاثة عناصر إلزامية لا يُسلَّم المنشور بدونها: (١) سطر دعوة فعل صريح داخل نص المنشور نفسه يقول للقارئ ماذا يفعل الآن، (٢) سطر «نص بديل:» تحت وصف الصورة يصفها بالعربية في جملة واحدة لقارئ الشاشة، (٣) وقت نشر محدد باليوم والتاريخ والساعة بصيغة «الخميس ٩ أكتوبر ٦:٣٠ م بتوقيت الجمهور» — ممنوع «قبل العرض بوقت كافٍ» أو أي صياغة غامضة، وممنوع اقتراح ساعة بين ١٢ منتصف الليل و٦ صباحاً. لخطة أو عدة منشورات: جدول Markdown (اليوم | المنصة | الزاوية | نوع المخرج | وقت النشر) ثم النصوص الكاملة في المخرجات. أضف `### تنبيه` بسطر واحد فقط عند وجود خطر فعلي (ادعاء غير موثّق طلبه المستخدم، مجال حسّاس، أزمة، محتوى مدفوع بلا إفصاح، افتراض جوهري بنيت عليه)."
         : "",
       intent === "work" ? replyStructureBlock(data.employeeId) : "",
       intent === "work"
@@ -1258,9 +1261,21 @@ export async function runEmployeeTurn(
     if (deliverables.length > 1) {
       // «منشورات» كلمة سِراج وحده: ردود سام وإيفا تحمل قناة أيضاً وكانت تُوصف خطأً بأنها منشورات.
       const allPosts = data.employeeId === "sonny" && deliverables.every((d) => Boolean(d.channel));
-      reply = allPosts
-        ? `${reply.trim()}\n\n📋 جهّزت **${deliverables.length} منشورات** منفصلة، كل منشور بنصه ومنصته وموعده — راجعها واعتمدها من [المخرجات والمهام](/app/tasks).`
-        : `${reply.trim()}\n\n📋 جهّزت **${deliverables.length} مخرجات** جاهزة، كل واحد بنصه الكامل — راجعها واعتمدها من [المخرجات والمهام](/app/tasks).`;
+      // تسمية المخرجات بنوعها الحقيقي: رسائل بريد لا تُسمّى «منشورات».
+      const kinds = new Set(deliverables.map((d) => (d.kind ?? "").trim()).filter(Boolean));
+      const oneKind = kinds.size === 1 ? [...kinds][0]! : "";
+      const label = allPosts
+        ? "منشورات"
+        : oneKind
+          ? /رسال|بريد|إيميل|ايميل|mail/i.test(oneKind)
+            ? "رسائل"
+            : /مقال|تدوين/i.test(oneKind)
+              ? "مقالات"
+              : /تصميم|صورة|بصري/i.test(oneKind)
+                ? "تصاميم"
+                : "مخرجات"
+          : "مخرجات";
+      reply = `${reply.trim()}\n\n📋 جهّزت **${deliverables.length} ${label}** منفصلة، كل واحدة بنصها الكامل — راجعها واعتمدها من [المخرجات والمهام](/app/tasks).`;
     }
 
     // صور من موقع المستخدم: اختيارية تماماً — تظهر فقط حين يطلبها في رسالته.

@@ -339,6 +339,14 @@ export const masteryStandard = [
   "- صفر فراغات نائبة: ممنوع منعاً باتاً أي قوس مربّع يطلب من المستخدم تعبئة شيء مثل [اسم المنصة] أو [المدينة] أو [الرابط] أو [اذكر التفاصيل]. اكتب اسم العلامة وقدراتها ومنتجاتها كما وردت في ملف العلامة، واستخدم «رابط النبذة» أو «الرابط في البايو» بدل قوس فارغ، وحدّد تاريخاً وساعة فعليين للنشر. أي مخرج يحتاج تعبئة يدوية = مخرج مرفوض.",
 ].join("\n");
 
+/**
+ * الكتل الحاكمة: سلّم السلطة ثم الالتزام. تُوضع في أول رسالة النظام دائماً كي
+ * تحكم كل ما بعدها، ولذلك أُخرجت من التعليمات المشتركة التي تأتي في وسط الرسالة.
+ */
+export function governanceBlocks(employeeId: string): string[] {
+  return [authorityBlock, complianceBlock(employeeId)].filter(Boolean);
+}
+
 /** التعليمات المشتركة الكاملة لأي موظف. */
 export function sharedSystemBlocks(params: {
   employeeId: string;
@@ -348,8 +356,9 @@ export function sharedSystemBlocks(params: {
   country?: string | null | undefined;
   dialect?: string | null | undefined;
 }): string[] {
+  // سلّم السلطة وكتلة الالتزام يُحقنان في أول التعليمات مباشرة (انظر ai.functions)
+  // كي يكونا حاكمين فعلياً على ما بعدهما، لا مدفونين في منتصف الرسالة.
   return [
-    authorityBlock,
     masteryStandard,
     operatingPrinciples(params.employeeId),
     languageBlock(params.country, params.dialect),
@@ -357,7 +366,6 @@ export function sharedSystemBlocks(params: {
     teamDirectoryBlock(params.employeeId),
     handoffBlock(params.employeeId),
     platformLimitsBlock(params.employeeId),
-    complianceBlock(params.employeeId),
     integrationPolicyBlock(params.employeeId, params.connected),
     `## المنصة\n${platformMapFor(params.employeeId)}`,
   ].filter(Boolean);

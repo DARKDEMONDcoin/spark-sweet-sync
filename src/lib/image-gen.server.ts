@@ -188,8 +188,65 @@ export async function generateImageBytes(
         clearTimeout(timer);
       }
     }
-    return geminiImage(withQuality(prompt), opts);
+    return (
+      (await geminiImage(withQuality(prompt), opts)) ??
+      (await gatewayImage(withQuality(prompt), opts))
+    );
   });
+}
+
+/**
+ * احتياطي ثانٍ: توليد الصورة عبر بوابة Lovable AI حين يسقط المزوّد المجاني
+ * ويكون مفتاح Gemini غائباً — كي لا يخرج المنشور بلا صورة إطلاقاً.
+ */
+async function gatewayImage(
+  prompt: string,
+  opts: ImageOptions = {},
+): Promise<{ bytes: Uint8Array; contentType: string; url: string } | null> {
+  try {
+    const { providerKeys } = await import("./provider-keys.server");
+    const { lovable } = await providerKeys();
+    if (!lovable) return null;
+    const w = opts.width ?? 1216;
+    const h = opts.height ?? 640;
+    const size = w === h ? "1024x1024" : w > h ? "1536x1024" : "1024x1536";
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/images/generations", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${lovable}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ model: "google/gemini-3-pro-image-preview", prompt, n: 1, size }),
+    });
+    if (!res.ok) {
+      console.error("[image] gateway image failed:", res.status);
+      return null;
+    }
+    const json = (await res.json()) as { data?: { b64_json?: string; url?: string }[] };
+    const first = json.data?.[0];
+    if (first?.b64_json) {
+      const bin = atob(first.b64_json);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return {
+        bytes,
+        contentType: "image/png",
+        url: `data:image/png;base64,${first.b64_json}`,
+      };
+    }
+    if (first?.url) {
+      const img = await fetch(first.url);
+      if (!img.ok) return null;
+      const bytes = new Uint8Array(await img.arrayBuffer());
+      if (bytes.byteLength < 2000) return null;
+      return {
+        bytes,
+        contentType: img.headers.get("content-type") ?? "image/png",
+        url: first.url,
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error("[image] gateway image failed:", error);
+    return null;
+  }
 }
 
 /** احتياطي: توليد الصورة عبر Gemini image بمفتاح Google AI Studio المخزَّن في Supabase. */

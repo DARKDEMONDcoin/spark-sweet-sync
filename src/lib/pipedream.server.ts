@@ -299,13 +299,32 @@ export async function proxyRequest<T = unknown>(
       : params.body === undefined
         ? undefined
         : JSON.stringify(params.body);
-  return call<T>(config, `/proxy/${encoded}?${search.toString()}`, {
-    method: params.method ?? "GET",
+  const method = params.method ?? "GET";
+  const init = {
+    method,
     ...(body === undefined ? {} : { body }),
     headers: Object.fromEntries(
       Object.entries(params.headers ?? {}).map(([k, v]) => [`x-pd-proxy-${k}`, v]),
     ),
-  });
+  };
+
+  // إعادة محاولة متدرّجة عند الازدحام أو عطل مؤقت في المزوّد (429/5xx/انقطاع شبكة).
+  // القراءات فقط تُعاد تلقائياً؛ الكتابة لا تُعاد كي لا يتكرر نشر أو إرسال.
+  const retryable = method === "GET";
+  const attempts = retryable ? 3 : 1;
+  let lastError: unknown;
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    try {
+      return await call<T>(config, `/proxy/${encoded}?${search.toString()}`, init);
+    } catch (error) {
+      lastError = error;
+      const text = error instanceof Error ? error.message : String(error);
+      const transient = /\b(429|500|502|503|504)\b|rate limit|timeout|ETIMEDOUT|ECONNRESET|fetch failed/i.test(text);
+      if (!transient || attempt === attempts - 1) throw error;
+      await new Promise((r) => setTimeout(r, 600 * 2 ** attempt + Math.floor(Math.random() * 250)));
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error(String(lastError));
 }
 
 function base64Url(value: string): string {
