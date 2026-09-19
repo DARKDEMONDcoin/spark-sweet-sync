@@ -15912,6 +15912,7 @@ section:has(> .integration-grid-wave) {
   --home-terracotta: oklch(0.52418 0.13258 37.48);
   --home-teal: oklch(0.48558 0.06376 183.77);
   --home-gold: oklch(0.67771 0.12672 73.45);
+  --verified-blue: oklch(0.67 0.17 238);
   color: var(--home-ink);
   font-family: "IBM Plex Sans Arabic", ui-sans-serif, system-ui, sans-serif;
   letter-spacing: 0;
@@ -16171,7 +16172,7 @@ section:has(> .integration-grid-wave) {
 @media (max-width: 720px) {
   .sahl-page-hero {
     min-height: 640px;
-    padding: 300px 16px 72px;
+    padding: 340px 16px 72px;
   }
   .sahl-page-ribbon {
     inset: -160px -170px auto 28%;
@@ -43656,6 +43657,9 @@ html {
   .sahl-home main > section {
     padding-block: clamp(2.4rem, 8vw, 3.4rem);
   }
+  .sahl-site-page main > .sahl-page-hero {
+    padding-block: 7.25rem 4.5rem;
+  }
   .sahl-site-page :is(.text-6xl, .text-5xl),
   .sahl-home :is(.text-6xl, .text-5xl) {
     font-size: 1.95rem;
@@ -43733,18 +43737,39 @@ html {
 
 /* ===== علامة التوثيق الأصلية داخل إشعار «بانتظار اعتمادك» ===== */
 .sahl-float-note-icon.is-verified {
-  width: clamp(26px, 2.6vw, 36px);
-  height: clamp(26px, 2.6vw, 36px);
+  width: clamp(23px, 2.2vw, 30px);
+  height: clamp(23px, 2.2vw, 30px);
   background: transparent;
   box-shadow: none;
-  color: var(--home-teal);
+  color: var(--verified-blue, oklch(0.67 0.17 238));
 }
 .sahl-float-note-icon.is-verified svg {
   width: 100%;
   height: 100%;
   stroke-width: 0;
   --verified-check: var(--home-bg, #fff);
-  filter: drop-shadow(0 4px 10px oklch(0.55 0.1 200 / 0.28));
+  filter: drop-shadow(0 4px 10px oklch(0.67 0.17 238 / 0.24));
+}
+.sahl-hero-product > .sahl-float-note {
+  width: fit-content;
+  min-height: 52px;
+  grid-template-columns: 28px auto 7px;
+  padding: 9px 12px;
+}
+.sahl-hero-product > .sahl-float-note b {
+  font-size: 0.82rem;
+}
+
+@media (max-width: 720px) {
+  .sahl-hero-product > .sahl-float-note {
+    width: fit-content;
+    min-height: 48px;
+    grid-template-columns: 25px auto 7px;
+    padding: 8px 11px;
+  }
+  .sahl-hero-product > .sahl-float-note b {
+    font-size: 0.75rem;
+  }
 }
 
 /* ===== زر «أحدث رسالة»: يظهر فقط عندما يقلّب المستخدم بحرّيته ===== */
