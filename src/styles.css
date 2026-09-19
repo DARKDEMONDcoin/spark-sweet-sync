@@ -44937,3 +44937,114 @@ html {
   background: hsl(24 22% 14%);
   color: #fff;
 }
+
+/* واجهة أمثلة مختصرة: نشاط واحد ظاهر مع الاحتفاظ بالنصوص الحقيقية كاملة */
+.sahl-sample-showcase {
+  margin-top: clamp(28px, 4vw, 48px);
+}
+.sahl-sample-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  width: min(100%, 680px);
+  margin: 0 auto 16px;
+  padding: 6px;
+  border: 1px solid color-mix(in oklab, var(--home-bg) 18%, transparent);
+  border-radius: 10px;
+  background: color-mix(in oklab, var(--home-ink) 84%, transparent);
+}
+.sahl-sample-tabs button {
+  min-width: 0;
+  height: 42px;
+  color: color-mix(in oklab, var(--home-bg) 68%, transparent);
+  font-weight: 800;
+}
+.sahl-sample-tabs button:hover {
+  background: color-mix(in oklab, var(--home-bg) 8%, transparent);
+  color: var(--home-bg);
+}
+.sahl-sample-tabs button.is-active {
+  background: var(--home-bg);
+  color: var(--home-ink);
+  box-shadow: 0 4px 14px color-mix(in oklab, var(--home-ink) 28%, transparent);
+}
+.sahl-sample-tabs button > span {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 6px;
+  background: color-mix(in oklab, currentColor 10%, transparent);
+  font-size: 0.72rem;
+}
+.sahl-sample-viewport {
+  position: relative;
+  max-height: 590px;
+  overflow: hidden;
+  border-radius: 18px;
+  transition: max-height 500ms ease;
+}
+.sahl-sample-viewport::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 130px;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--home-ink));
+  transition: opacity 200ms ease;
+}
+.sahl-sample-viewport.is-expanded {
+  max-height: 2400px;
+}
+.sahl-sample-viewport.is-expanded::after {
+  opacity: 0;
+}
+.sahl-sample-expand {
+  display: flex;
+  min-width: 190px;
+  margin: -22px auto 0;
+  position: relative;
+  z-index: 1;
+  border-color: color-mix(in oklab, var(--home-bg) 28%, transparent);
+  background: var(--home-ink);
+  color: var(--home-bg);
+  box-shadow: 0 16px 36px color-mix(in oklab, var(--home-ink) 42%, transparent);
+}
+.sahl-sample-expand:hover {
+  background: color-mix(in oklab, var(--home-bg) 10%, var(--home-ink));
+  color: var(--home-bg);
+}
+.sahl-sample-expand svg {
+  transition: transform 200ms ease;
+}
+.sahl-sample-expand[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+@media (max-width: 640px) {
+  .sahl-sample-tabs {
+    gap: 4px;
+    padding: 4px;
+  }
+  .sahl-sample-tabs button {
+    height: 52px;
+    padding-inline: 6px;
+    white-space: normal;
+    font-size: 0.7rem;
+    line-height: 1.3;
+  }
+  .sahl-sample-tabs button > span {
+    display: none;
+  }
+  .sahl-sample-viewport {
+    max-height: 520px;
+  }
+  .sahl-sample-expand {
+    min-width: 176px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sahl-sample-viewport,
+  .sahl-sample-expand svg {
+    transition: none;
+  }
+}
