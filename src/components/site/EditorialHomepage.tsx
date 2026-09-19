@@ -727,7 +727,17 @@ export function EditorialHomepage() {
                         <b>{card.kind}</b>
                         <span>{card.employee}</span>
                       </header>
-                      <pre>{card.body}</pre>
+                      <div className="sahl-sample-body">
+                        {card.body.split("\n").map((line, i) =>
+                          line.trim().startsWith("#") ? (
+                            <h4 key={i}>{line.replace(/^#+\s*/, "")}</h4>
+                          ) : line.trim() === "" ? (
+                            <span key={i} className="sahl-sample-gap" />
+                          ) : (
+                            <p key={i}>{line}</p>
+                          ),
+                        )}
+                      </div>
                     </article>
                   );
                 })}
