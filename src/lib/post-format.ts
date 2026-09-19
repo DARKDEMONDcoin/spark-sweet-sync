@@ -229,5 +229,11 @@ export function bestTimeFor(provider: string, from: Date = new Date()): Date {
       if (candidate > floor) return candidate;
     }
   }
-  return new Date(floor.getTime() + 3_600_000);
+  // احتياطي: لا نقترح أبداً وقتاً بين منتصف الليل والسادسة صباحاً — الجمهور نائم.
+  const fallback = new Date(floor.getTime() + 3_600_000);
+  if (fallback.getHours() < 6) {
+    fallback.setHours(hours[0] ?? 10, 0, 0, 0);
+    if (fallback <= floor) fallback.setDate(fallback.getDate() + 1);
+  }
+  return fallback;
 }
