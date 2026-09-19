@@ -1261,9 +1261,21 @@ export async function runEmployeeTurn(
     if (deliverables.length > 1) {
       // «منشورات» كلمة سِراج وحده: ردود سام وإيفا تحمل قناة أيضاً وكانت تُوصف خطأً بأنها منشورات.
       const allPosts = data.employeeId === "sonny" && deliverables.every((d) => Boolean(d.channel));
-      reply = allPosts
-        ? `${reply.trim()}\n\n📋 جهّزت **${deliverables.length} منشورات** منفصلة، كل منشور بنصه ومنصته وموعده — راجعها واعتمدها من [المخرجات والمهام](/app/tasks).`
-        : `${reply.trim()}\n\n📋 جهّزت **${deliverables.length} مخرجات** جاهزة، كل واحد بنصه الكامل — راجعها واعتمدها من [المخرجات والمهام](/app/tasks).`;
+      // تسمية المخرجات بنوعها الحقيقي: رسائل بريد لا تُسمّى «منشورات».
+      const kinds = new Set(deliverables.map((d) => (d.kind ?? "").trim()).filter(Boolean));
+      const oneKind = kinds.size === 1 ? [...kinds][0]! : "";
+      const label = allPosts
+        ? "منشورات"
+        : oneKind
+          ? /رسال|بريد|إيميل|ايميل|mail/i.test(oneKind)
+            ? "رسائل"
+            : /مقال|تدوين/i.test(oneKind)
+              ? "مقالات"
+              : /تصميم|صورة|بصري/i.test(oneKind)
+                ? "تصاميم"
+                : "مخرجات"
+          : "مخرجات";
+      reply = `${reply.trim()}\n\n📋 جهّزت **${deliverables.length} ${label}** منفصلة، كل واحدة بنصها الكامل — راجعها واعتمدها من [المخرجات والمهام](/app/tasks).`;
     }
 
     // صور من موقع المستخدم: اختيارية تماماً — تظهر فقط حين يطلبها في رسالته.
