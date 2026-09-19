@@ -44664,3 +44664,160 @@ html {
   background: hsl(16 52% 44%);
   color: #fff;
 }
+
+/* sample section — لقطة المحادثة الحقيقية داخل الغلاف الداكن */
+.sahl-shot {
+  border: 1px solid hsl(28 20% 88%);
+  border-radius: 18px;
+  background: #fffdfa;
+  box-shadow: 0 16px 40px rgb(24 16 10 / 0.22);
+  overflow: hidden;
+  color: hsl(24 16% 20%);
+}
+.sahl-shot-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-bottom: 1px solid hsl(28 20% 91%);
+  background: hsl(34 44% 97%);
+}
+.sahl-shot-bar span {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: hsl(28 18% 84%);
+}
+.sahl-shot-bar p {
+  margin-inline-start: 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: hsl(24 14% 40%);
+}
+.sahl-shot-thread {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: clamp(14px, 2.4vw, 22px);
+}
+.sahl-shot-user {
+  align-self: flex-start;
+  max-width: min(36rem, 88%);
+  padding: 12px 16px;
+  border-radius: 16px 16px 16px 4px;
+  background: hsl(16 52% 44%);
+  color: #fff;
+  font-size: 0.9rem;
+  line-height: 1.85;
+  font-weight: 600;
+}
+.sahl-shot-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.sahl-shot-avatar {
+  display: block;
+  width: 38px;
+  height: 38px;
+  flex: none;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgb(24 16 10 / 0.12);
+}
+.sahl-shot-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.sahl-shot-content {
+  min-width: 0;
+  flex: 1;
+}
+.sahl-shot-who {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.sahl-shot-who b {
+  font-size: 0.84rem;
+  color: hsl(24 22% 14%);
+}
+.sahl-shot-who small {
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: hsl(24 12% 48%);
+}
+.sahl-shot-content .prose {
+  font-size: 0.86rem;
+  line-height: 1.95;
+  color: hsl(24 16% 24%);
+}
+.sahl-shot-content .prose :is(h1, h2, h3, h4) {
+  font-size: 0.86rem;
+  color: hsl(24 22% 14%);
+}
+.sahl-shot-media {
+  margin: 12px 0 0;
+  max-width: 260px;
+  border: 1px solid hsl(28 20% 90%);
+  border-radius: 14px;
+  overflow: hidden;
+  background: hsl(34 30% 96%);
+}
+.sahl-shot-media img {
+  display: block;
+  width: 100%;
+}
+.sahl-shot-publish {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid hsl(28 20% 90%);
+  border-radius: 14px;
+  background: hsl(34 44% 97.5%);
+}
+.sahl-shot-publish-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.sahl-shot-publish-head > span {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: hsl(140 34% 92%);
+  color: hsl(152 40% 24%);
+  font-size: 0.64rem;
+  font-weight: 700;
+}
+.sahl-shot-publish button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid hsl(28 20% 86%);
+  background: #fff;
+  color: hsl(24 20% 22%);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 7px 14px;
+  cursor: default;
+}
+.sahl-shot-publish button.is-connect {
+  border-style: dashed;
+  color: hsl(24 14% 44%);
+  font-size: 0.68rem;
+  padding: 5px 11px;
+}
+.sahl-shot-publish-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.sahl-shot-publish button.is-primary {
+  border-color: transparent;
+  background: hsl(24 22% 14%);
+  color: #fff;
+}

@@ -55,6 +55,7 @@ import adsVisual from "@/assets/product/ads-visual.png";
 import proofVisual from "@/assets/product/proof-visual.png";
 import { VerifiedBadge } from "@/components/site/VerifiedBadge";
 import danaStory from "@/assets/sample/dana-cold-coffee-story.jpg";
+import { SampleChatShot } from "@/components/site/SampleChatShot";
 
 type DemoPhase = "idle" | "thinking" | "draft" | "approved";
 
