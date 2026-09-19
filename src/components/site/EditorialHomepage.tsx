@@ -711,19 +711,15 @@ export function EditorialHomepage() {
         <div className="sahl-dark-veil" aria-hidden="true" />
         <div className="sahl-shell">
           <Reveal>
-            <header className="sahl-section-head is-split">
+            <header className="sahl-section-head">
               <div>
                 <span>مخرج حقيقي · بلا تجميل</span>
                 <h2>
-                  هذا ما يصلك فعلًا.
+                  اطلبها بكلماتك.
                   <br />
-                  <em>منسوخ كما يُسلَّم.</em>
+                  <em>واستلمها جاهزة لقرارك.</em>
                 </h2>
               </div>
-              <p>
-                ثلاثة طلبات حقيقية أُرسلت داخل مساحات عمل فعلية على المنصة، وهذه هي المخرجات كما
-                رجعت من الموظفين أنفسهم — دون تعديل من عندنا.
-              </p>
             </header>
           </Reveal>
           <Reveal className="sahl-sample-showcase">
