@@ -199,6 +199,19 @@ const OWNS: Partial<Record<string, RegExp>> = {
 };
 
 /**
+ * ملكية حاسمة: أفعال أمر صريحة موجَّهة للموظف الحالي تُلغي أي إحالة مهما بلغ فارق
+ * الدرجات — لأن المستخدم حدّد الخدمة بنفسه لا المنصة.
+ */
+const DECISIVE: Partial<Record<string, RegExp>> = {
+  dana: /(صمّ?م|صممي|تصميم|ديزاين|design|موك ?اب|هوية بصرية|بوستر|بانر|لوجو|شعار|كاروسيل|بريف بصري)/i,
+  sonny: /(اكتب|اكتبي|منشور|بوست|كابشن|caption|ريلز|هاشتا|انشر|جدول(ي)? منشور)/i,
+  nour: /(اكتب(ي)? مقال|مقال|سيو|seo|ميتا|كلمات مفتاحية|مدونة)/i,
+  sam: /(عرض سعر|تسعير|صفقة|متابعة عميل|اعتراض|تفاوض|crm)/i,
+  adam: /(حلّ?ل|حللي|تقرير|أرقام|ارقام|roas|cpc|kpi|لوحة أداء)/i,
+  eva: /(رتّ?ب|رتبي|أولويات|موعد|مواعيد|اجتماع|محضر|تقويم)/i,
+};
+
+/**
  * يعيد الزميل الأنسب إن كان الطلب واضح الانتماء لاختصاصه وليس اختصاص الموظف الحالي.
  * يعيد null إن كان الطلب ضمن اختصاص الموظف الحالي أو غامضاً.
  */
@@ -221,7 +234,10 @@ export function detectHandoff(request: string, currentId: string): Handoff | nul
   const gap = top.s - (mine?.s ?? 0);
   if (owns && owns.test(text) && gap < 3) return null;
 
-
+  // ملكية حاسمة: فعل صريح من صميم عمل الموظف الحالي يُنهي الجدل مهما ورد اسم منصة
+  // في الطلب — «صمّمي ستوري إنستجرام» تصميم لدانة، لا نشر لسِراج.
+  const decisive = DECISIVE[currentId];
+  if (decisive && decisive.test(text)) return null;
 
   const e = employeeDirectory[top.rule.id];
   if (!e) return null;
