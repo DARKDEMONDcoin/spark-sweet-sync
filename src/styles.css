@@ -17199,7 +17199,7 @@ section:has(> .integration-grid-wave) {
   --home-terracotta: oklch(0.52418 0.13258 37.48);
   --home-teal: oklch(0.48558 0.06376 183.77);
   --home-gold: oklch(0.67771 0.12672 73.45);
-  --verified-blue: oklch(0.67 0.19 244);
+  --verified-blue: oklch(0.7 0.16 238);
   overflow: clip;
   background: var(--home-bg);
   color: var(--home-ink);
@@ -43742,14 +43742,16 @@ html {
   height: clamp(23px, 2.2vw, 30px);
   background: transparent;
   box-shadow: none;
-  color: var(--verified-blue);
+  color: var(--verified-blue, oklch(0.7 0.16 238));
 }
 .sahl-float-note-icon.is-verified svg {
   width: 100%;
   height: 100%;
   stroke-width: 0;
-  --verified-check: var(--home-bg, #fff);
-  filter: drop-shadow(0 4px 10px color-mix(in oklab, var(--verified-blue) 28%, transparent));
+  --verified-check: oklch(1 0 0);
+  filter: drop-shadow(
+    0 4px 10px color-mix(in oklab, var(--verified-blue, oklch(0.7 0.16 238)) 28%, transparent)
+  );
 }
 .sahl-hero-product > .sahl-float-note {
   width: fit-content;
@@ -43775,12 +43777,6 @@ html {
 
 /* ===== ضبط نهائي للهاتف: قائمة مدمجة وجدول مقارنة متماسك ===== */
 @media (max-width: 1024px) {
-  .sahl-white-nav.is-hidden {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
-  }
-
   .sahl-white-mobile {
     inset: 76px auto auto 50%;
     width: min(calc(100% - 24px), 400px);

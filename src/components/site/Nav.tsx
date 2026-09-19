@@ -98,12 +98,8 @@ export function Nav({ variant = "over" }: { variant?: "over" | "solid" }) {
 
         setScrolled(currentScrollY > 18);
 
-        if (variant === "solid" && window.innerWidth > 1024) {
-          if (currentScrollY <= 18 || delta < -6) setHidden(false);
-          else if (delta > 6 && currentScrollY > 96) setHidden(true);
-        } else {
-          setHidden(false);
-        }
+        if (currentScrollY <= 18 || delta < -6) setHidden(false);
+        else if (delta > 6 && currentScrollY > 96) setHidden(true);
 
         lastScrollY.current = currentScrollY;
         frame.current = null;
@@ -119,7 +115,7 @@ export function Nav({ variant = "over" }: { variant?: "over" | "solid" }) {
     };
   }, [variant]);
 
-  const navHidden = variant === "solid" && hidden && !mobileOpen && active === null;
+  const navHidden = hidden && !mobileOpen && active === null;
 
   return (
     <header
