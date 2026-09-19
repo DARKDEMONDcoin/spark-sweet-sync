@@ -723,54 +723,11 @@ export function EditorialHomepage() {
           </Reveal>
           {sampleBoards.map((board) => (
             <Reveal key={board.prompt} className="sahl-sample-board">
-              <div className="sahl-sample-ask">
-                <small>طلبك · {board.business}</small>
-                <p>{board.prompt}</p>
-              </div>
-              <div
-                className="sahl-sample-grid"
-                data-cards={board.cards.length > 1 ? "multi" : "single"}
-              >
-                {board.cards.map((card) => {
-                  const Icon = card.icon;
-                  return (
-                    <article key={card.kind}>
-                      <header>
-                        <Icon aria-hidden="true" />
-                        <b>{card.kind}</b>
-                        <span>{card.employee}</span>
-                      </header>
-                      <div className="sahl-sample-body">
-                        {card.body.split("\n").map((line, i) =>
-                          /^#{1,4}\s/.test(line.trim()) ? (
-                            <h4 key={i}>{line.replace(/^#+\s*/, "")}</h4>
-                          ) : line.trim() === "" ? (
-                            <span key={i} className="sahl-sample-gap" />
-                          ) : (
-                            <p key={i}>{line}</p>
-                          ),
-                        )}
-                      </div>
-                      {card.image ? (
-                        <figure className="sahl-sample-media">
-                          <img src={card.image} alt="الصورة التي ولّدتها دانة لستوري العرض" loading="lazy" />
-                        </figure>
-                      ) : null}
-                      <footer className="sahl-sample-actions">
-                        <span className="sahl-sample-quality">جودة {card.quality}٪</span>
-                        <span className="sahl-sample-pending">بانتظار اعتمادك</span>
-                        <div>
-                          {card.actions.map((a) => (
-                            <button key={a} type="button" disabled>
-                              {a}
-                            </button>
-                          ))}
-                        </div>
-                      </footer>
-                    </article>
-                  );
-                })}
-              </div>
+              <SampleChatShot
+                business={board.business}
+                prompt={board.prompt}
+                cards={board.cards}
+              />
             </Reveal>
           ))}
           <Reveal>
