@@ -729,7 +729,7 @@ export function EditorialHomepage() {
                       </header>
                       <div className="sahl-sample-body">
                         {card.body.split("\n").map((line, i) =>
-                          line.trim().startsWith("#") ? (
+                          /^#{1,4}\s/.test(line.trim()) ? (
                             <h4 key={i}>{line.replace(/^#+\s*/, "")}</h4>
                           ) : line.trim() === "" ? (
                             <span key={i} className="sahl-sample-gap" />
