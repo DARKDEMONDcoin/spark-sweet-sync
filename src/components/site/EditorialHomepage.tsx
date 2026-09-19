@@ -55,6 +55,7 @@ import adsVisual from "@/assets/product/ads-visual.png";
 import proofVisual from "@/assets/product/proof-visual.png";
 import { VerifiedBadge } from "@/components/site/VerifiedBadge";
 import danaStory from "@/assets/sample/dana-cold-coffee-story.jpg";
+import { SampleChatShot } from "@/components/site/SampleChatShot";
 
 type DemoPhase = "idle" | "thinking" | "draft" | "approved";
 
@@ -215,36 +216,37 @@ const sampleBoards = [
       "اكتب لي منشور إنستجرام قصير عن عرض قهوة مختصة في جدة: كل مشروب بارد بـ ١٩ ريال من ٤ العصر لـ ٧ المغرب طوال الأسبوع",
     cards: [
       {
-        icon: Instagram,
-        kind: "منشور إنستجرام",
+        employeeId: "sonny",
         employee: "سِراج",
+        role: "مدير السوشيال ميديا",
         quality: 82,
         image: null as string | null,
-        actions: ["اربط إنستجرام", "انشر الآن", "جدولة"],
-        body: "### المنشور\nلعشاق القهوة الباردة في جدة… من ٤ إلى ٧، أي مشروب بارد من قهوتنا المختصة بـ١٩ ريال.\n\nخلّ حرارة جدة برا، وبرّد يومك بخيارك المفضل يومياً طوال الأسبوع.\n\nشاهد الخيارات في الصورة، ومرّ علينا قبل ٧ واطلب مشروبك.\n\n### الهاشتاقات\n#قهوة_مختصة #قهوة_باردة #جدة\n\n### التوقيت والقياس\n- النشر: ٣:٣٠ عصراً بتوقيت جدة؛ قبل بداية العرض بنصف ساعة.\n- القياس بعد ٤٨ ساعة: نسبة المشاركات إلى الوصول.",
+        publish: { connect: "إنستجرام" },
+        body: "### المنشور\nلعشاق القهوة الباردة في جدة… من ٤ إلى ٧، أي مشروب بارد من قهوتنا المختصة بـ١٩ ريال.\n\nخلّ حرارة جدة برا، وبرّد يومك بخيارك المفضل يومياً طوال الأسبوع.\n\nشاهد الخيارات في الصورة، ومرّ علينا قبل ٧ واطلب مشروبك.\n\n### الهاشتاقات\n\\#قهوة\\_مختصة \\#قهوة\\_باردة \\#جدة\n\n### التوقيت والقياس\n- النشر: ٣:٣٠ عصراً بتوقيت جدة؛ قبل بداية العرض بنصف ساعة.\n- القياس بعد ٤٨ ساعة: نسبة المشاركات إلى الوصول.",
       },
       {
-        icon: Sparkles,
-        kind: "بريف تصميم ستوري",
+        employeeId: "dana",
         employee: "دانة",
+        role: "مديرة التصميم",
         quality: 82,
         image: danaStory as string | null,
-        actions: ["اربط إنستجرام", "انشر الآن", "جدولة"],
+        publish: { connect: "إنستجرام" },
         body: "### الاتجاه البصري\n- كوب قهوة باردة مكثّف القطرات يحتل ٤٠٪ من الإطار، بإضاءة مسائية دافئة وخلفية بنية هادئة.\n- السعر ١٩ ريال هو العنصر الأكبر، ثم الوقت، ثم الموقع والدعوة.\n\n### المواصفات\n- ستوري إنستجرام ١٠٨٠×١٩٢٠ بكسل؛ خالٍ من النص أول ٢٥٠ بكسل وآخر ٣٢٠ بكسل.\n- الألوان: بني داكن #2B1D17، كريمي #FFF4DF، كراميل #D6A15C بنسبة ٦٠/٣٠/١٠.\n- التباين المحسوب ١٤٫٩:١ — يحقق WCAG AA.",
       },
     ],
   },
   {
     business: "متجر لمار · تجزئة إلكترونية",
-    prompt: "اكتب لي فقرة افتتاحية لمقال في مدونة متجرنا عن كيف يختار العميل هدية عملية بأقل من ٢٠٠ ريال",
+    prompt:
+      "اكتب لي فقرة افتتاحية لمقال في مدونة متجرنا عن كيف يختار العميل هدية عملية بأقل من ٢٠٠ ريال",
     cards: [
       {
-        icon: SearchCheck,
-        kind: "فقرة مقال + حزمة سيو",
+        employeeId: "nour",
         employee: "نور",
+        role: "مديرة المحتوى والسيو",
         quality: 72,
         image: null as string | null,
-        actions: ["اعتماد", "نشر إلى المدوّنة"],
+        publish: null,
         body: "# كيف تختار هدية عملية بأقل من 200 ريال تترك أثراً حقيقياً؟\n\nاختيار هدية عملية بميزانية اقتصادية لا يعني أبداً التنازل عن القيمة أو الذوق. ركّز على ثلاثة معايير: أن تخدم روتيناً يومياً للمتلقي، وتأتي بجودة تصنيع مناسبة للاستعمال المتكرر، وتُقدَّم بأسلوب أنيق يرفع قيمتها البصرية.\n\n### حزمة السيو المرافقة\n- عنوان الميتا: كيف تختار هدية عملية بأقل من 200 ريال؟ دليل خطوة بخطوة\n- الرابط اللطيف: practical-gifts-under-200-sar\n- البيانات المنظمة: Article مدمجة مع FAQPage",
       },
     ],
@@ -254,12 +256,12 @@ const sampleBoards = [
     prompt: "اكتب لي رد واتساب على عميل يسأل عن سعر تنظيف الأسنان وموعد متاح هذا الأسبوع",
     cards: [
       {
-        icon: MessageCircle,
-        kind: "رد واتساب على عميل",
+        employeeId: "sam",
         employee: "سالم",
+        role: "مدير المبيعات",
         quality: 82,
         image: null as string | null,
-        actions: ["اعتماد", "إرسال الرد"],
+        publish: null,
         body: "الموضوع: استفسار موعد تنظيف الأسنان\n\nحياك الله، سعر تنظيف الأسنان يعتمد على نوع التنظيف المطلوب، ونوضح لك السعر المعتمد قبل تثبيت الحجز، وفي حال احتاجت اللثة تنظيفًا عميقًا يحدد الطبيب التكلفة بعد الفحص. بخصوص حجز موعد، يحتاج التوافر إلى مراجعة الجدول؛ لتحديد أقرب موعد متاح لك، هل تفضل الفترة الصباحية أم المسائية؟",
       },
     ],
@@ -723,54 +725,11 @@ export function EditorialHomepage() {
           </Reveal>
           {sampleBoards.map((board) => (
             <Reveal key={board.prompt} className="sahl-sample-board">
-              <div className="sahl-sample-ask">
-                <small>طلبك · {board.business}</small>
-                <p>{board.prompt}</p>
-              </div>
-              <div
-                className="sahl-sample-grid"
-                data-cards={board.cards.length > 1 ? "multi" : "single"}
-              >
-                {board.cards.map((card) => {
-                  const Icon = card.icon;
-                  return (
-                    <article key={card.kind}>
-                      <header>
-                        <Icon aria-hidden="true" />
-                        <b>{card.kind}</b>
-                        <span>{card.employee}</span>
-                      </header>
-                      <div className="sahl-sample-body">
-                        {card.body.split("\n").map((line, i) =>
-                          /^#{1,4}\s/.test(line.trim()) ? (
-                            <h4 key={i}>{line.replace(/^#+\s*/, "")}</h4>
-                          ) : line.trim() === "" ? (
-                            <span key={i} className="sahl-sample-gap" />
-                          ) : (
-                            <p key={i}>{line}</p>
-                          ),
-                        )}
-                      </div>
-                      {card.image ? (
-                        <figure className="sahl-sample-media">
-                          <img src={card.image} alt="الصورة التي ولّدتها دانة لستوري العرض" loading="lazy" />
-                        </figure>
-                      ) : null}
-                      <footer className="sahl-sample-actions">
-                        <span className="sahl-sample-quality">جودة {card.quality}٪</span>
-                        <span className="sahl-sample-pending">بانتظار اعتمادك</span>
-                        <div>
-                          {card.actions.map((a) => (
-                            <button key={a} type="button" disabled>
-                              {a}
-                            </button>
-                          ))}
-                        </div>
-                      </footer>
-                    </article>
-                  );
-                })}
-              </div>
+              <SampleChatShot
+                business={board.business}
+                prompt={board.prompt}
+                cards={board.cards}
+              />
             </Reveal>
           ))}
           <Reveal>
