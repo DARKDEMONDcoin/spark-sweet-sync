@@ -86,6 +86,8 @@ export function Nav({ variant = "over" }: { variant?: "over" | "solid" }) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
+  const scrollDistance = useRef(0);
+  const scrollDirection = useRef<"up" | "down" | null>(null);
   const frame = useRef<number | null>(null);
 
   useEffect(() => {
@@ -95,11 +97,30 @@ export function Nav({ variant = "over" }: { variant?: "over" | "solid" }) {
       frame.current = window.requestAnimationFrame(() => {
         const currentScrollY = Math.max(window.scrollY, 0);
         const delta = currentScrollY - lastScrollY.current;
+        const nextDirection = delta > 0 ? "down" : delta < 0 ? "up" : scrollDirection.current;
 
         setScrolled(currentScrollY > 18);
 
-        if (currentScrollY <= 18 || delta < -6) setHidden(false);
-        else if (delta > 6 && currentScrollY > 96) setHidden(true);
+        if (nextDirection !== scrollDirection.current) {
+          scrollDistance.current = 0;
+          scrollDirection.current = nextDirection;
+        }
+        scrollDistance.current += Math.abs(delta);
+
+        if (currentScrollY <= 18) {
+          setHidden(false);
+          scrollDistance.current = 0;
+        } else if (nextDirection === "up" && scrollDistance.current >= 18) {
+          setHidden(false);
+          scrollDistance.current = 0;
+        } else if (
+          nextDirection === "down" &&
+          scrollDistance.current >= 28 &&
+          currentScrollY > 96
+        ) {
+          setHidden(true);
+          scrollDistance.current = 0;
+        }
 
         lastScrollY.current = currentScrollY;
         frame.current = null;
