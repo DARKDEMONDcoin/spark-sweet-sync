@@ -17199,6 +17199,7 @@ section:has(> .integration-grid-wave) {
   --home-terracotta: oklch(0.52418 0.13258 37.48);
   --home-teal: oklch(0.48558 0.06376 183.77);
   --home-gold: oklch(0.67771 0.12672 73.45);
+  --verified-blue: oklch(0.67 0.19 244);
   overflow: clip;
   background: var(--home-bg);
   color: var(--home-ink);
@@ -43741,14 +43742,14 @@ html {
   height: clamp(23px, 2.2vw, 30px);
   background: transparent;
   box-shadow: none;
-  color: var(--verified-blue, oklch(0.67 0.17 238));
+  color: var(--verified-blue);
 }
 .sahl-float-note-icon.is-verified svg {
   width: 100%;
   height: 100%;
   stroke-width: 0;
   --verified-check: var(--home-bg, #fff);
-  filter: drop-shadow(0 4px 10px oklch(0.67 0.17 238 / 0.24));
+  filter: drop-shadow(0 4px 10px color-mix(in oklab, var(--verified-blue) 28%, transparent));
 }
 .sahl-hero-product > .sahl-float-note {
   width: fit-content;
@@ -43769,6 +43770,99 @@ html {
   }
   .sahl-hero-product > .sahl-float-note b {
     font-size: 0.75rem;
+  }
+}
+
+/* ===== ضبط نهائي للهاتف: قائمة مدمجة وجدول مقارنة متماسك ===== */
+@media (max-width: 1024px) {
+  .sahl-white-nav.is-hidden {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .sahl-white-mobile {
+    inset: 76px auto auto 50%;
+    width: min(calc(100% - 24px), 400px);
+    max-height: min(62dvh, 480px);
+    transform: translateX(-50%);
+    padding: 14px;
+    gap: 10px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--home-line);
+    border-radius: 14px;
+    background: var(--home-bg);
+    opacity: 1;
+    backdrop-filter: none;
+    box-shadow: 0 24px 60px -24px color-mix(in oklab, var(--home-ink) 42%, transparent);
+  }
+  .sahl-white-mobile > div {
+    gap: 0;
+  }
+  .sahl-white-mobile section {
+    padding: 3px 0 6px;
+    border-color: color-mix(in oklab, var(--home-terracotta) 14%, var(--home-line));
+  }
+  .sahl-white-mobile section > b {
+    padding: 5px 8px 2px;
+    color: var(--home-terracotta);
+  }
+  .sahl-white-mobile a {
+    min-height: 34px;
+    padding-inline: 8px;
+    font-size: 0.8rem;
+  }
+  .sahl-white-mobile > [data-slot="button"],
+  .sahl-white-mobile > .inline-flex {
+    min-height: 42px;
+    margin-top: 6px;
+  }
+}
+
+@media (max-width: 720px) {
+  .sahl-white-mobile {
+    inset-block-start: 88px;
+  }
+
+  .sahl-versus-table {
+    border-radius: 12px;
+  }
+  .sahl-versus-head {
+    display: grid;
+    grid-template-columns: minmax(96px, 0.34fr) minmax(0, 1fr);
+  }
+  .sahl-versus-head span {
+    min-width: 0;
+    padding: 12px 14px;
+  }
+  .sahl-versus-head span:nth-child(2) {
+    display: none;
+  }
+  .sahl-versus-row {
+    grid-template-columns: minmax(96px, 0.34fr) minmax(0, 1fr);
+    align-items: stretch;
+    padding: 0;
+  }
+  .sahl-versus-row > span:first-child {
+    display: flex;
+    align-items: center;
+    padding: 14px 12px;
+    font-size: 0.82rem;
+    line-height: 1.65;
+  }
+  .sahl-versus-row .is-plain {
+    display: none;
+  }
+  .sahl-versus-row .is-sahl {
+    min-width: 0;
+    height: 100%;
+    margin: 0;
+    padding: 14px;
+    border-radius: 0;
+    align-items: flex-start;
+    font-size: 0.8rem;
+    line-height: 1.8;
   }
 }
 

@@ -98,9 +98,11 @@ export function Nav({ variant = "over" }: { variant?: "over" | "solid" }) {
 
         setScrolled(currentScrollY > 18);
 
-        if (variant === "solid") {
+        if (variant === "solid" && window.innerWidth > 1024) {
           if (currentScrollY <= 18 || delta < -6) setHidden(false);
           else if (delta > 6 && currentScrollY > 96) setHidden(true);
+        } else {
+          setHidden(false);
         }
 
         lastScrollY.current = currentScrollY;
