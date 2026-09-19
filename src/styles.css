@@ -44585,3 +44585,25 @@ html {
     grid-template-columns: 1fr;
   }
 }
+.sahl-sample-body {
+  flex: 1;
+  padding: 16px 17px;
+  font-family: "Almarai", "IBM Plex Sans Arabic", sans-serif;
+  font-size: 0.85rem;
+  line-height: 1.95;
+  color: hsl(24 16% 24%);
+}
+.sahl-sample-body h4 {
+  margin: 0 0 2px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: hsl(16 52% 40%);
+}
+.sahl-sample-body p {
+  margin: 0;
+}
+.sahl-sample-gap {
+  display: block;
+  height: 10px;
+}
