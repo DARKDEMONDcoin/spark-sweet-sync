@@ -7,6 +7,7 @@ import {
   CalendarCheck2,
   Check,
   CheckCircle2,
+  ChevronDown,
   Code2,
   Instagram,
   Loader2,
@@ -602,7 +603,10 @@ function SirajDemo() {
 
 export function EditorialHomepage() {
   const [sector, setSector] = useState(0);
+  const [sample, setSample] = useState(0);
+  const [sampleExpanded, setSampleExpanded] = useState(false);
   const currentSector = sectors[sector] ?? sectors[0];
+  const currentSample = sampleBoards[sample] ?? sampleBoards[0];
   /** إيقاف حركات المشاهد خارج الشاشة حتى يبقى التمرير سلسًا تمامًا. */
   useEffect(() => {
     const scenes = Array.from(document.querySelectorAll<HTMLElement>(".sahl-scene"));
@@ -722,15 +726,47 @@ export function EditorialHomepage() {
               </p>
             </header>
           </Reveal>
-          {sampleBoards.map((board) => (
-            <Reveal key={board.prompt} className="sahl-sample-board">
+          <Reveal className="sahl-sample-showcase">
+            <div className="sahl-sample-tabs" role="tablist" aria-label="اختر نوع النشاط">
+              {sampleBoards.map((board, index) => (
+                <Button
+                  key={board.business}
+                  type="button"
+                  variant="ghost"
+                  role="tab"
+                  aria-selected={sample === index}
+                  className={sample === index ? "is-active" : undefined}
+                  onClick={() => {
+                    setSample(index);
+                    setSampleExpanded(false);
+                  }}
+                >
+                  <span aria-hidden="true">{index === 0 ? "☕" : index === 1 ? "◫" : "+"}</span>
+                  {index === 0 ? "مطعم ومقهى" : index === 1 ? "متجر إلكتروني" : "عيادة"}
+                </Button>
+              ))}
+            </div>
+            <div
+              className={`sahl-sample-viewport${sampleExpanded ? " is-expanded" : ""}`}
+              role="tabpanel"
+            >
               <SampleChatShot
-                business={board.business}
-                prompt={board.prompt}
-                cards={board.cards}
+                business={currentSample.business}
+                prompt={currentSample.prompt}
+                cards={currentSample.cards}
               />
-            </Reveal>
-          ))}
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              className="sahl-sample-expand"
+              aria-expanded={sampleExpanded}
+              onClick={() => setSampleExpanded((value) => !value)}
+            >
+              {sampleExpanded ? "عرض مختصر" : "عرض المحادثة كاملة"}
+              <ChevronDown aria-hidden="true" />
+            </Button>
+          </Reveal>
           <Reveal>
             <p className="sahl-sample-note">
               <CheckCircle2 aria-hidden="true" /> الأرقام والعروض في الأمثلة من طلب المستخدم نفسه —
