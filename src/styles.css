@@ -44949,24 +44949,24 @@ html {
   width: min(100%, 680px);
   margin: 0 auto 16px;
   padding: 6px;
-  border: 1px solid color-mix(in oklab, var(--home-paper) 18%, transparent);
+  border: 1px solid color-mix(in oklab, var(--home-bg) 18%, transparent);
   border-radius: 10px;
   background: color-mix(in oklab, var(--home-ink) 84%, transparent);
 }
 .sahl-sample-tabs button {
   min-width: 0;
   height: 42px;
-  color: color-mix(in oklab, var(--home-paper) 68%, transparent);
+  color: color-mix(in oklab, var(--home-bg) 68%, transparent);
   font-weight: 800;
 }
 .sahl-sample-tabs button:hover {
-  background: color-mix(in oklab, var(--home-paper) 8%, transparent);
-  color: var(--home-paper);
+  background: color-mix(in oklab, var(--home-bg) 8%, transparent);
+  color: var(--home-bg);
 }
 .sahl-sample-tabs button.is-active {
-  background: var(--home-paper);
+  background: var(--home-bg);
   color: var(--home-ink);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 14px color-mix(in oklab, var(--home-ink) 28%, transparent);
 }
 .sahl-sample-tabs button > span {
   display: grid;
@@ -45005,14 +45005,14 @@ html {
   margin: -22px auto 0;
   position: relative;
   z-index: 1;
-  border-color: color-mix(in oklab, var(--home-paper) 28%, transparent);
+  border-color: color-mix(in oklab, var(--home-bg) 28%, transparent);
   background: var(--home-ink);
-  color: var(--home-paper);
-  box-shadow: var(--shadow-lg);
+  color: var(--home-bg);
+  box-shadow: 0 16px 36px color-mix(in oklab, var(--home-ink) 42%, transparent);
 }
 .sahl-sample-expand:hover {
-  background: color-mix(in oklab, var(--home-paper) 10%, var(--home-ink));
-  color: var(--home-paper);
+  background: color-mix(in oklab, var(--home-bg) 10%, var(--home-ink));
+  color: var(--home-bg);
 }
 .sahl-sample-expand svg {
   transition: transform 200ms ease;
