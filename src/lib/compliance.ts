@@ -45,7 +45,8 @@ const ACCESSIBILITY = [
 
 /** كتلة الالتزام والأزمات وإمكانية الوصول لموظف معيّن. */
 export function complianceBlock(employeeId: string): string {
-  const producesPublic = ["sonny", "nour", "sam", "dana", "eva"].includes(employeeId);
+  // أمَل تكتب بريداً ومحاضر لا محتوى بصرياً منشوراً — قواعد النص البديل والتباين لا تخصّها.
+  const producesPublic = ["sonny", "nour", "sam", "dana"].includes(employeeId);
   const parts = [LEGAL];
   if (["sonny", "sam", "eva", "nour"].includes(employeeId)) parts.push(CRISIS);
   if (producesPublic) parts.push(ACCESSIBILITY);

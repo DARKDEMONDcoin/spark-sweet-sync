@@ -348,8 +348,9 @@ export function sharedSystemBlocks(params: {
   country?: string | null | undefined;
   dialect?: string | null | undefined;
 }): string[] {
+  // سلّم السلطة وكتلة الالتزام يُحقنان في أول التعليمات مباشرة (انظر ai.functions)
+  // كي يكونا حاكمين فعلياً على ما بعدهما، لا مدفونين في منتصف الرسالة.
   return [
-    authorityBlock,
     masteryStandard,
     operatingPrinciples(params.employeeId),
     languageBlock(params.country, params.dialect),
@@ -357,7 +358,6 @@ export function sharedSystemBlocks(params: {
     teamDirectoryBlock(params.employeeId),
     handoffBlock(params.employeeId),
     platformLimitsBlock(params.employeeId),
-    complianceBlock(params.employeeId),
     integrationPolicyBlock(params.employeeId, params.connected),
     `## المنصة\n${platformMapFor(params.employeeId)}`,
   ].filter(Boolean);
