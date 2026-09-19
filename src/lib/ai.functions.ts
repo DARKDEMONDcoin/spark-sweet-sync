@@ -17,8 +17,7 @@ import {
   researchFor,
 } from "@/lib/nour-run.server";
 import { employeeDirectory, sharedSystemBlocks, type EmployeeId } from "@/lib/team-knowledge";
-import { authorityBlock } from "@/lib/authority";
-import { complianceBlock } from "@/lib/compliance";
+import { governanceBlocks } from "@/lib/team-knowledge";
 import { scopeBoundaryBlock } from "@/lib/scope-boundaries";
 import { employeeEdgeBlock } from "@/lib/employee-edge";
 import { frontierEdgeBlock } from "@/lib/frontier-edge";
@@ -667,8 +666,7 @@ export async function runEmployeeTurn(
       `تعمل داخل منصة «سهل» لصالح العلامة: ${workspace.name} (${workspace.industry}).`,
       `نبرة العلامة: ${workspace.tone}.`,
       // الحاكمان أولاً: سلّم السلطة ثم الالتزام القانوني — كل ما بعدهما محكوم بهما.
-      authorityBlock,
-      complianceBlock(data.employeeId),
+      ...governanceBlocks(data.employeeId),
       nowBlock(timezone, ws.country),
       intentBlock(intent),
       answerPolicyBlock(data.employeeId, intent),

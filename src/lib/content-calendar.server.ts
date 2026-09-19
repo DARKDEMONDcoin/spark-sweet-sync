@@ -5,7 +5,7 @@ import { ambientPulse, timezoneForCountry } from "./live-context.server";
 import { craft, personas } from "./nour-run.server";
 import { memoryBlock } from "./memory.server";
 import { adaptForProvider } from "./post-format";
-import { sharedSystemBlocks } from "./team-knowledge";
+import { sharedSystemBlocks, governanceBlocks } from "./team-knowledge";
 
 /**
  * تقويم المحتوى الكامل لسِراج:
@@ -148,6 +148,7 @@ function systemFor(
   const p = personas["sonny"]!;
   return [
     `أنت ${p.name} — ${p.role}`,
+    ...governanceBlocks("sonny"),
     `## معايير الحرفة\n${craft["sonny"] ?? ""}`,
     ...sharedSystemBlocks({
       employeeId: "sonny",
