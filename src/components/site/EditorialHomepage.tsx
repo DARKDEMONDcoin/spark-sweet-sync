@@ -680,7 +680,6 @@ export function EditorialHomepage() {
               </span>
               <div>
                 <b>بانتظار اعتمادك</b>
-                <small>٣ مخرجات جاهزة للمراجعة</small>
               </div>
               <i className="sahl-float-note-dot" aria-hidden="true" />
             </div>
