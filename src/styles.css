@@ -43657,6 +43657,9 @@ html {
   .sahl-home main > section {
     padding-block: clamp(2.4rem, 8vw, 3.4rem);
   }
+  .sahl-site-page main > .sahl-page-hero {
+    padding-block: 7.25rem 4.5rem;
+  }
   .sahl-site-page :is(.text-6xl, .text-5xl),
   .sahl-home :is(.text-6xl, .text-5xl) {
     font-size: 1.95rem;
