@@ -703,44 +703,40 @@ export function EditorialHomepage() {
                 </h2>
               </div>
               <p>
-                طلب واحد بالعامية، والمخرج جاهز للاعتماد: منشور بلهجة جمهورك، نص إعلان مموّل، وبريف
-                تصميم لدانة — دون تعديل من عندنا.
+                ثلاثة طلبات حقيقية أُرسلت داخل مساحات عمل فعلية على المنصة، وهذه هي المخرجات كما
+                رجعت من الموظفين أنفسهم — دون تعديل من عندنا.
               </p>
             </header>
           </Reveal>
-          <Reveal className="sahl-sample-board">
-            <div className="sahl-sample-ask">
-              <small>طلبك</small>
-              <p>{sampleOutput.prompt}</p>
-            </div>
-            <div className="sahl-sample-grid">
-              <article className="is-post">
-                <header>
-                  <Instagram aria-hidden="true" />
-                  <b>منشور إنستجرام</b>
-                  <span>لهجة خليجية</span>
-                </header>
-                <pre>{sampleOutput.post}</pre>
-              </article>
-              <article className="is-ad">
-                <header>
-                  <Megaphone aria-hidden="true" />
-                  <b>نص إعلان مموّل</b>
-                  <span>سِراج</span>
-                </header>
-                <pre>{sampleOutput.ad}</pre>
-              </article>
-              <article className="is-brief">
-                <header>
-                  <Sparkles aria-hidden="true" />
-                  <b>بريف التصميم</b>
-                  <span>لدانة</span>
-                </header>
-                <pre>{sampleOutput.brief}</pre>
-              </article>
-            </div>
+          {sampleBoards.map((board) => (
+            <Reveal key={board.prompt} className="sahl-sample-board">
+              <div className="sahl-sample-ask">
+                <small>طلبك · {board.business}</small>
+                <p>{board.prompt}</p>
+              </div>
+              <div
+                className="sahl-sample-grid"
+                data-cards={board.cards.length > 1 ? "multi" : "single"}
+              >
+                {board.cards.map((card) => {
+                  const Icon = card.icon;
+                  return (
+                    <article key={card.kind}>
+                      <header>
+                        <Icon aria-hidden="true" />
+                        <b>{card.kind}</b>
+                        <span>{card.employee}</span>
+                      </header>
+                      <pre>{card.body}</pre>
+                    </article>
+                  );
+                })}
+              </div>
+            </Reveal>
+          ))}
+          <Reveal>
             <p className="sahl-sample-note">
-              <CheckCircle2 aria-hidden="true" /> الأرقام والعروض في المثال من طلب المستخدم نفسه —
+              <CheckCircle2 aria-hidden="true" /> الأرقام والعروض في الأمثلة من طلب المستخدم نفسه —
               الفريق لا يخترع سعرًا ولا وعدًا من عنده.
             </p>
           </Reveal>
