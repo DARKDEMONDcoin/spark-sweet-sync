@@ -872,6 +872,47 @@ export type Database = {
           },
         ]
       }
+      integration_events: {
+        Row: {
+          action: string
+          created_at: string
+          detail: Json | null
+          event_key: string
+          id: string
+          provider: string
+          status: string
+          workspace_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          detail?: Json | null
+          event_key: string
+          id?: string
+          provider: string
+          status?: string
+          workspace_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          detail?: Json | null
+          event_key?: string
+          id?: string
+          provider?: string
+          status?: string
+          workspace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integration_events_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       integrations: {
         Row: {
           account: string | null
