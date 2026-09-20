@@ -254,23 +254,52 @@ export async function subscribeWaba(wabaId: string, userToken: string): Promise<
   });
 }
 
+/** أخطاء ميتا العابرة: ازدحام أو حد طلبات أو عطل مؤقت — تستحق إعادة محاولة. */
+export function isTransientMetaFailure(status: number, code?: number): boolean {
+  if (status === 429 || status >= 500) return true;
+  return code === 1 || code === 2 || code === 4 || code === 17 || code === 32 || code === 341;
+}
+
+const GRAPH_RETRY_DELAYS_MS = [400, 1200, 3000];
+
+/** مهلة بين المحاولات — قابلة للاستبدال في الاختبارات. */
+async function wait(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function graph<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init);
-  const text = await res.text();
-  let json: unknown;
-  try {
-    json = text ? JSON.parse(text) : {};
-  } catch {
-    json = { raw: text };
-  }
-  if (!res.ok) {
+  let lastError: Error | null = null;
+  for (let attempt = 0; attempt <= GRAPH_RETRY_DELAYS_MS.length; attempt += 1) {
+    let res: Response;
+    try {
+      res = await fetch(url, init);
+    } catch (networkError) {
+      lastError =
+        networkError instanceof Error ? networkError : new Error("تعذّر الاتصال بخوادم ميتا.");
+      const delay = GRAPH_RETRY_DELAYS_MS[attempt];
+      if (delay === undefined) break;
+      await wait(delay);
+      continue;
+    }
+    const text = await res.text();
+    let json: unknown;
+    try {
+      json = text ? JSON.parse(text) : {};
+    } catch {
+      json = { raw: text };
+    }
+    if (res.ok) return json as T;
+
     const err = (json as { error?: { message?: string; code?: number; error_subcode?: number } })
       .error;
-    throw new Error(
+    lastError = new Error(
       explainMetaError(err) ?? `ميتا رفضت الطلب [${res.status}]: ${text.slice(0, 200)}`,
     );
+    const delay = GRAPH_RETRY_DELAYS_MS[attempt];
+    if (delay === undefined || !isTransientMetaFailure(res.status, err?.code)) break;
+    await wait(delay);
   }
-  return json as T;
+  throw lastError ?? new Error("تعذّر إتمام الطلب مع ميتا.");
 }
 
 /** ترجمة أخطاء Graph إلى سبب وحل بالعربية. */
