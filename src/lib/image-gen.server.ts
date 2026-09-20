@@ -380,6 +380,31 @@ export function stripImagePrompt(markdown: string): string {
  * صورة رئيسية «مملوكة»: نولّدها ثم نرفعها إلى مخزن Supabase (nour-media) باسم مساحة العمل،
  * فتصبح أصلاً دائماً يخصّ العميل لا رابطاً خارجياً. عند أي فشل نرجع لرابط المزوّد المجاني.
  */
+/**
+ * يتحقق أن الرابط يعرض صورة فعلاً قبل إرجاعه — رابط مزوّد خارجي قد لا يُحمَّل
+ * في متصفح المستخدم فتظهر صورة مكسورة ثم تُحذف من المنشور.
+ */
+async function usableImageUrl(url: string): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 12_000);
+    try {
+      const res = await fetch(url, { signal: controller.signal });
+      if (!res.ok) return false;
+      const type = res.headers.get("content-type") ?? "";
+      return type.startsWith("image/");
+    } finally {
+      clearTimeout(timer);
+    }
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * يعيد رابط صورة صالحاً للعرض والنشر، أو نصاً فارغاً إن تعذّر توليدها —
+ * لا نُرجع رابطاً غير مُتحقَّق منه حتى لا يظهر للمستخدم مربع صورة مكسور.
+ */
 export async function ownedHeroImage(
   client: {
     storage: {
@@ -393,10 +418,12 @@ export async function ownedHeroImage(
   prompt: string,
   opts: ImageOptions = {},
 ): Promise<string> {
-  const fallback = imageUrl(prompt, opts);
   try {
     const image = await generateImageBytes(prompt, opts);
-    if (!image) return fallback;
+    if (!image) {
+      const fallback = imageUrl(prompt, opts);
+      return (await usableImageUrl(fallback)) ? fallback : "";
+    }
 
     const ext = image.contentType.includes("png") ? "png" : "jpg";
     const path = `${workspaceId}/hero/${crypto.randomUUID()}.${ext}`;
@@ -409,12 +436,16 @@ export async function ownedHeroImage(
         upsert: false,
       },
     );
-    if (error) return fallback;
+    // فشل الرفع لا يضيّع صورة وُلّدت فعلاً: نعيد رابط المصدر الذي تحقّقنا من تحميله.
+    if (error) {
+      console.error("[nour] hero image upload failed:", error);
+      return image.url;
+    }
     // رابط موقّع طويل الأمد (5 سنوات) صالح للنشر داخل المقال
     const { data } = await bucket.createSignedUrl(path, 60 * 60 * 24 * 365 * 5);
-    return data?.signedUrl ?? fallback;
+    return data?.signedUrl ?? image.url;
   } catch (error) {
     console.error("[nour] owned hero image failed:", error);
-    return fallback;
+    return "";
   }
 }

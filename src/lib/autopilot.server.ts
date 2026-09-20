@@ -303,11 +303,12 @@ export async function runAutopilotRow(
     if (row.with_image && !imageUrl) {
       try {
         const { ownedHeroImage, heroPrompt } = await import("./image-gen.server");
-        imageUrl = await ownedHeroImage(
-          admin as unknown as Parameters<typeof ownedHeroImage>[0],
-          row.workspace_id,
-          imagePrompt ?? heroPrompt(brief, workspace?.industry),
-        );
+        imageUrl =
+          (await ownedHeroImage(
+            admin as unknown as Parameters<typeof ownedHeroImage>[0],
+            row.workspace_id,
+            imagePrompt ?? heroPrompt(brief, workspace?.industry),
+          )) || null;
       } catch (e) {
         console.error("[autopilot] image failed:", e);
       }
