@@ -73,7 +73,7 @@ function ApprovalsPage() {
     try {
       await update.mutateAsync({ id, patch: steps ? { status, steps } : { status } });
       if (workspace?.id) {
-        const task = pending.find((item) => item.id === id);
+        const task = allPending.find((item) => item.id === id);
         if (task)
           await saveFeedback({
             data: {
