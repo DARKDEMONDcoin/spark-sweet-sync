@@ -137,7 +137,7 @@ export async function runDueSocialPosts(admin: Admin, now = new Date()): Promise
 
   const { data: due, error } = await admin
     .from("social_posts")
-    .select("id, locked_at")
+    .select("id, locked_at, provider")
     .eq("status", "scheduled")
     .lte("scheduled_at", now.toISOString())
     .or(`locked_at.is.null,locked_at.lt.${staleBefore}`)
