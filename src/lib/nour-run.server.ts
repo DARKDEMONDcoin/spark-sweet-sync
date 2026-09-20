@@ -1008,10 +1008,13 @@ export async function executeSkill(
         params.workspaceId,
         authored ?? heroPrompt(subjectForImage, workspace.industry),
       );
-      const lines = output.split("\n");
-      const at = lines[0]?.startsWith("#") ? 1 : 0;
-      lines.splice(at, 0, "", `![${alt}](${hero})`, "");
-      output = lines.join("\n");
+      // صورة غير صالحة لا تُدرج إطلاقاً — مقال بلا صورة أفضل من صورة مكسورة.
+      if (hero) {
+        const lines = output.split("\n");
+        const at = lines[0]?.startsWith("#") ? 1 : 0;
+        lines.splice(at, 0, "", `![${alt}](${hero})`, "");
+        output = lines.join("\n");
+      }
     } catch (error) {
       console.error("[nour] hero image failed:", error);
     }
