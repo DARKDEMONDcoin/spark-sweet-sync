@@ -23,7 +23,8 @@ async function config<T>(admin: Admin, workspaceId: string, provider: string): P
     .eq("workspace_id", workspaceId)
     .eq("provider", provider)
     .maybeSingle();
-  return (data?.config as T | undefined) ?? null;
+  const { openConfig } = await import("./credential-crypto.server");
+  return (await openConfig<T>(data?.config)) ?? null;
 }
 
 async function connectedProviders(admin: Admin, workspaceId: string): Promise<Set<string>> {
