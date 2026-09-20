@@ -22,6 +22,7 @@ import { taskStatusLabel } from "@/data/app";
 import { useIntegrations, useProfile, useTasks, useWorkspace } from "@/lib/data";
 import { Portrait } from "@/components/site/Portrait";
 import { BrandLoader } from "@/components/site/BrandLoader";
+import { splitReview } from "@/lib/task-freshness";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
