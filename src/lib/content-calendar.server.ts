@@ -493,11 +493,12 @@ export async function generateCalendarPost(
         draft: out?.image_prompt || meta.imageIdea,
       });
       const prompt = `${brief} Square 1:1 composition, premium commercial photography.`;
-      imageUrl = await ownedHeroImage(
-        admin as unknown as Parameters<typeof ownedHeroImage>[0],
-        workspaceId,
-        prompt,
-      );
+      imageUrl =
+        (await ownedHeroImage(
+          admin as unknown as Parameters<typeof ownedHeroImage>[0],
+          workspaceId,
+          prompt,
+        )) || null;
     } catch (e) {
       console.error("[calendar] image failed:", e);
     }
