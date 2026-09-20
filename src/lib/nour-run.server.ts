@@ -862,14 +862,16 @@ export async function executeSkill(
     workspace.banned_words?.length
       ? `كلمات ممنوعة تماماً: ${workspace.banned_words.join("، ")}.`
       : "",
+    // سلّم السلطة والالتزام أولاً — كما في مسار المحادثة — كي يحكما معايير
+    // الحِرفة والدليل لا أن يأتيا بعدهما فيصيرا استثناءً.
+    ...governanceBlocks(params.employeeId),
     craft[params.employeeId] ? `## معايير حِرفتك\n${craft[params.employeeId]}` : "",
     playbookFor(
       params.employeeId,
       `${params.skillId} ${Object.values(params.values ?? {}).join(" ")}`,
     ),
-    ...governanceBlocks(params.employeeId),
     qualityCriteria[params.employeeId]?.length
-      ? `## معايير قبول المخرج (راجعها بنداً بنداً قبل التسليم)\n${(qualityCriteria[params.employeeId] ?? []).map((criterion, index) => `${index + 1}) ${criterion}`).join("\n")}`
+      ? `## معايير قبول المخرج (راجعها بنداً بنداً قبل الكتابة ثم قبل التسليم)\n${(qualityCriteria[params.employeeId] ?? []).map((criterion, index) => `${index + 1}) ${criterion}`).join("\n")}`
       : "",
     sirajMemory,
     nourMemory,
