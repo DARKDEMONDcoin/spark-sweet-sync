@@ -215,6 +215,12 @@ const DECISIVE: Partial<Record<string, RegExp>> = {
  * يعيد الزميل الأنسب إن كان الطلب واضح الانتماء لاختصاصه وليس اختصاص الموظف الحالي.
  * يعيد null إن كان الطلب ضمن اختصاص الموظف الحالي أو غامضاً.
  */
+/** هل الطلب فعل أمر صريح من صميم عمل هذا الموظف؟ (يمنع التحويل ويُلزمه بالتنفيذ) */
+export function isDecisivelyMine(request: string, currentId: string): boolean {
+  const decisive = DECISIVE[currentId];
+  return Boolean(decisive && decisive.test((request || "").toLowerCase()));
+}
+
 export function detectHandoff(request: string, currentId: string): Handoff | null {
   const text = (request || "").toLowerCase();
   if (text.trim().length < 4) return null;
