@@ -109,7 +109,8 @@ async function loadWordPressConfig(
     .eq("provider", "wordpress")
     .maybeSingle();
   if (error) throw new Error(error.message);
-  const config = data?.config as WordPressConfig | undefined;
+  const { openConfig } = await import("./credential-crypto.server");
+  const config = await openConfig<WordPressConfig>(data?.config);
   if (!config?.siteUrl || !config.username || !config.appPassword) {
     throw new Error("موقع ووردبريس غير مربوط بعد — اربطه من صفحة التكاملات.");
   }
@@ -150,11 +151,12 @@ export const connectWordPress = createServerFn({ method: "POST" })
     const host = new URL(config.siteUrl).host;
     const account = `${host} · ${me.name ?? config.username}`;
 
+    const { sealConfig } = await import("./credential-crypto.server");
     const { error: credError } = await admin.from("integration_credentials").upsert(
       {
         workspace_id: data.workspaceId,
         provider: "wordpress",
-        config: config as unknown as Record<string, string>,
+        config: await sealConfig(config as unknown as Record<string, unknown>),
       },
       { onConflict: "workspace_id,provider" },
     );
