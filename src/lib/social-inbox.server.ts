@@ -50,8 +50,18 @@ export async function assertMetaPublishScopes(
   let granted: string[] = [];
   try {
     granted = await metaPermissions(config, workspaceId, accountId);
-  } catch {
-    return; // لا نمنع النشر إن تعذّر الفحص — Graph سيرد بخطأ صريح إن لزم.
+  } catch (firstError) {
+    // محاولة ثانية قصيرة قبل الحكم — قد يكون ازدحاماً لحظياً لدى الوسيط.
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    try {
+      granted = await metaPermissions(config, workspaceId, accountId);
+    } catch {
+      console.error("[meta] permissions check failed twice", firstError);
+      throw new Error(
+        "تعذّر التحقق من أذونات النشر لدى ميتا الآن، فأوقفنا النشر حمايةً من إرسال ناقص. " +
+          "أعد المحاولة بعد دقيقة، وإن تكرر الأمر افحص الربط من صفحة التكاملات.",
+      );
+    }
   }
   const needed: string[] = [...META_PUBLISH_SCOPES];
   if (provider === "instagram") needed.push("instagram_basic", "instagram_content_publish");
