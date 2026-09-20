@@ -76,9 +76,10 @@ export async function buildBriefing(admin: Admin, workspaceId: string): Promise<
   ] = await Promise.all([
     admin
       .from("tasks")
-      .select("id, title, employee_id")
+      .select("id, title, employee_id, created_at, updated_at")
       .eq("workspace_id", workspaceId)
       .eq("status", "review")
+      .gte("updated_at", staleBefore())
       .order("created_at", { ascending: false })
       .limit(6),
     admin
