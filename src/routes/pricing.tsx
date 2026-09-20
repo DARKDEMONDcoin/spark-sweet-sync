@@ -81,7 +81,7 @@ function PricingPage() {
           <div className="mt-6 rounded-[1.75rem] border border-border bg-card px-5 py-2 shadow-card">
             <ul className="divide-y divide-border/70">
               {selected.perks.map((perk, i) => {
-                const Icon = perkIcons[i % perkIcons.length];
+                const Icon = perkIcons[i % perkIcons.length] ?? Sparkles;
                 return (
                   <li key={perk} className="flex items-center justify-between gap-3 py-4">
                     <span className="min-w-0 text-[0.95rem] font-semibold">{perk}</span>
