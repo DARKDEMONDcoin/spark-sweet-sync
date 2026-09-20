@@ -179,14 +179,18 @@ export async function runDueSocialPosts(admin: Admin, now = new Date()): Promise
     if (!claimed?.length) continue;
 
     try {
-      report.push(await publishQueuedPost(admin, row.id));
+      const result = await publishQueuedPost(admin, row.id);
+      if (result.status === "published") failures.delete(provider);
+      else failures.set(provider, (failures.get(provider) ?? 0) + 1);
+      report.push(result);
     } catch (e) {
       const message = e instanceof Error ? e.message : "فشل غير معروف";
+      failures.set(provider, (failures.get(provider) ?? 0) + 1);
       await admin
         .from("social_posts")
         .update({ locked_at: null, last_error: message.slice(0, 500) })
         .eq("id", row.id);
-      report.push({ id: row.id, provider: "—", status: "retry", error: message.slice(0, 500) });
+      report.push({ id: row.id, provider, status: "retry", error: message.slice(0, 500) });
     }
   }
   return report;
