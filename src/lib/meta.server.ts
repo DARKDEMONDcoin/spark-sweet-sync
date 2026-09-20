@@ -129,13 +129,25 @@ export async function verifyState(
 /**
  * أصل ثابت لرابط العودة — لأن نطاق المعاينة يتغيّر (lovableproject.com / id-preview)
  * بينما لوحة ميتا تقبل روابط مسجّلة فقط. نستخدم النطاق الثابت للمشروع دائماً.
+ * يُضبط عبر META_REDIRECT_ORIGIN؛ القيمة أدناه احتياطية فقط لبيئة المعاينة.
  */
-export const META_CANONICAL_ORIGIN =
-  "https://project--541025ee-163e-49a6-8c43-600f36bcb147.lovable.app";
+const META_FALLBACK_ORIGIN = "https://project--541025ee-163e-49a6-8c43-600f36bcb147.lovable.app";
+
+export function metaCanonicalOrigin(): string {
+  const configured = process.env["META_REDIRECT_ORIGIN"] || process.env["PUBLIC_SITE_ORIGIN"] || "";
+  try {
+    if (configured) return new URL(configured).origin;
+  } catch {
+    console.error("[meta] META_REDIRECT_ORIGIN غير صالح — استُخدم الأصل الاحتياطي.");
+  }
+  return META_FALLBACK_ORIGIN;
+}
+
+/** @deprecated استخدم metaCanonicalOrigin() — يبقى للتوافق مع الاستدعاءات القديمة. */
+export const META_CANONICAL_ORIGIN = META_FALLBACK_ORIGIN;
 
 export function metaRedirectUri(_origin?: string): string {
-  const override = process.env["META_REDIRECT_ORIGIN"];
-  return `${new URL(override || META_CANONICAL_ORIGIN).origin}/api/public/meta/callback`;
+  return `${metaCanonicalOrigin()}/api/public/meta/callback`;
 }
 
 export function metaAuthorizeUrl(
@@ -242,23 +254,52 @@ export async function subscribeWaba(wabaId: string, userToken: string): Promise<
   });
 }
 
+/** أخطاء ميتا العابرة: ازدحام أو حد طلبات أو عطل مؤقت — تستحق إعادة محاولة. */
+export function isTransientMetaFailure(status: number, code?: number): boolean {
+  if (status === 429 || status >= 500) return true;
+  return code === 1 || code === 2 || code === 4 || code === 17 || code === 32 || code === 341;
+}
+
+const GRAPH_RETRY_DELAYS_MS = [400, 1200, 3000];
+
+/** مهلة بين المحاولات — قابلة للاستبدال في الاختبارات. */
+async function wait(ms: number): Promise<void> {
+  await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function graph<T>(url: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(url, init);
-  const text = await res.text();
-  let json: unknown;
-  try {
-    json = text ? JSON.parse(text) : {};
-  } catch {
-    json = { raw: text };
-  }
-  if (!res.ok) {
+  let lastError: Error | null = null;
+  for (let attempt = 0; attempt <= GRAPH_RETRY_DELAYS_MS.length; attempt += 1) {
+    let res: Response;
+    try {
+      res = await fetch(url, init);
+    } catch (networkError) {
+      lastError =
+        networkError instanceof Error ? networkError : new Error("تعذّر الاتصال بخوادم ميتا.");
+      const delay = GRAPH_RETRY_DELAYS_MS[attempt];
+      if (delay === undefined) break;
+      await wait(delay);
+      continue;
+    }
+    const text = await res.text();
+    let json: unknown;
+    try {
+      json = text ? JSON.parse(text) : {};
+    } catch {
+      json = { raw: text };
+    }
+    if (res.ok) return json as T;
+
     const err = (json as { error?: { message?: string; code?: number; error_subcode?: number } })
       .error;
-    throw new Error(
+    lastError = new Error(
       explainMetaError(err) ?? `ميتا رفضت الطلب [${res.status}]: ${text.slice(0, 200)}`,
     );
+    const delay = GRAPH_RETRY_DELAYS_MS[attempt];
+    if (delay === undefined || !isTransientMetaFailure(res.status, err?.code)) break;
+    await wait(delay);
   }
-  return json as T;
+  throw lastError ?? new Error("تعذّر إتمام الطلب مع ميتا.");
 }
 
 /** ترجمة أخطاء Graph إلى سبب وحل بالعربية. */
@@ -445,10 +486,60 @@ export async function metaTarget(
   kind: "facebook" | "instagram",
   pageId?: string,
 ): Promise<MetaConnection | null> {
+  await refreshMetaTokensIfExpiring(admin, workspaceId);
   const all = await listMetaConnections(admin, workspaceId, kind);
   const usable = all.filter((c) => (kind === "instagram" ? Boolean(c.igUserId) : true));
   if (pageId) return usable.find((c) => c.pageId === pageId) ?? null;
   return usable.find((c) => c.status === "connected") ?? usable[0] ?? null;
+}
+
+/** عتبة التجديد الاستباقي: نجدّد قبل انتهاء التوكن بعشرة أيام. */
+export const META_REFRESH_WINDOW_MS = 10 * 24 * 60 * 60 * 1000;
+
+export function metaTokenNeedsRefresh(expiresAt: string | null, now = Date.now()): boolean {
+  if (!expiresAt) return false;
+  const expiry = Date.parse(expiresAt);
+  if (Number.isNaN(expiry)) return false;
+  return expiry - now <= META_REFRESH_WINDOW_MS;
+}
+
+/**
+ * تجديد استباقي لتوكن ميتا الطويل قبل انتهائه، بدل اكتشاف الانتهاء بخطأ 190 أثناء النشر.
+ * لا يرمي أخطاء: الفشل يُسجَّل فقط ويترك التوكن الحالي كما هو.
+ */
+export async function refreshMetaTokensIfExpiring(
+  admin: Admin,
+  workspaceId: string,
+): Promise<boolean> {
+  try {
+    const { data, error } = await admin
+      .from("meta_connections")
+      .select("user_access_token, token_expires_at")
+      .eq("workspace_id", workspaceId)
+      .eq("status", "connected")
+      .limit(1);
+    if (error || !data?.length) return false;
+    const row = data[0] as { user_access_token: string | null; token_expires_at: string | null };
+    if (!row.user_access_token || !metaTokenNeedsRefresh(row.token_expires_at)) return false;
+
+    const config = await metaConfig();
+    if (!config) return false;
+
+    const fresh = await longLivedToken(config, row.user_access_token);
+    const pages = await fetchPages(fresh.token);
+    if (!pages.length) return false;
+    const scopes = await grantedScopes(fresh.token).catch(() => [] as string[]);
+    await saveConnections(admin, workspaceId, {
+      userToken: fresh.token,
+      expiresAt: fresh.expiresAt,
+      scopes,
+      pages,
+    });
+    return true;
+  } catch (refreshError) {
+    console.error("[meta] proactive token refresh failed", refreshError);
+    return false;
+  }
 }
 
 /** هل يوجد مسار ميتا مباشر جاهز لهذه المنصة؟ (يقرر التوجيه الهجين) */
