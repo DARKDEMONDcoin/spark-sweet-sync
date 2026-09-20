@@ -176,6 +176,21 @@ export const askEmployeeInput = z.object({
 /** الموظفون الذين تُولَّد لهم صورة فعلية عند وجود وصف بصري في الرد. */
 const VISUAL_EMPLOYEES = new Set(["dana", "sonny", "nour"]);
 
+/** أنواع مخرجات نصّية بحتة لا تُرفَق بصورة أبداً في التوليد التلقائي. */
+const NON_VISUAL_KINDS =
+  /(ميتا|meta|وصف\s*الصفحة|عنوان\s*الصفحة|كلمات\s*مفتاحية|keyword|تدقيق|audit|تقرير|report|تحليل|خطة|استراتيجي|بريد|إيميل|email|رسالة\s*متابعة|قائمة|جدول|سكربت\s*اتصال|schema|بيانات\s*منظمة|روابط\s*داخلية)/i;
+
+/**
+ * هل يستحق هذا المخرج صورة؟ التوليد التلقائي كان يُشعل صورة لأي مخرج من موظف
+ * بصري، فتُولَّد صورة لوصف ميتا أو قائمة كلمات — وقت وتكلفة بلا فائدة.
+ */
+function deliverableWantsVisual(items: Deliverable[]): boolean {
+  if (!items.length) return true;
+  if (items.some((d) => typeof d.image_prompt === "string" && d.image_prompt.trim().length > 30))
+    return true;
+  return !items.every((d) => NON_VISUAL_KINDS.test(`${d.kind ?? ""} ${d.title ?? ""}`));
+}
+
 /**
  * شبكة أمان أخيرة ضد الفراغات النائبة: القوس الذي يطلب اسم العلامة أو رابطها أو
  * قائمة خدماتها يُستبدل بالحقيقة من ملف العلامة، وما لا حقيقة له يُحذف مع سطره
