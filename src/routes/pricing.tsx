@@ -44,6 +44,8 @@ export const Route = createFileRoute("/pricing")({
 
 // الباقات مصدرها ملف واحد مشترك مع قسم الأسعار في الصفحة الرئيسية.
 
+const perkIcons = [Sparkles, Users, Zap, Image, Workflow, Inbox, Link2, BarChart3, BadgeCheck];
+
 const matrix: { f: string; v: (boolean | string)[] }[] = [
   { f: "عدد الموظفين الرقميين", v: ["1", "6", "6+"] },
   { f: "المهام الشهرية", v: ["60", "1000", "غير محدودة"] },
