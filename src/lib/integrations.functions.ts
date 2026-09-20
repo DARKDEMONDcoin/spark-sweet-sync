@@ -10,12 +10,39 @@ type WordPressConfig = {
   appPassword: string;
 };
 
-function normalizeSiteUrl(input: string): string {
+/** عناوين شبكات داخلية ممنوعة — تمنع استغلال الربط للوصول لخدمات داخلية (SSRF). */
+export function isPrivateHostname(hostname: string): boolean {
+  const host = hostname.toLowerCase().replace(/^\[|\]$/g, "");
+  if (host === "localhost" || host.endsWith(".localhost") || host.endsWith(".internal")) return true;
+  if (host === "::1" || host === "0.0.0.0" || host.startsWith("fc") || host.startsWith("fd"))
+    return true;
+  if (host.startsWith("fe80:")) return true;
+  const v4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
+  if (!v4) return false;
+  const [a, b] = [Number(v4[1]), Number(v4[2])];
+  if (a === 10 || a === 127 || a === 0) return true;
+  if (a === 169 && b === 254) return true; // بيانات وصف السحابة
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true;
+  return false;
+}
+
+export function normalizeSiteUrl(input: string): string {
   const raw = input.trim().replace(/\/+$/, "");
   const withScheme = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
   const url = new URL(withScheme);
-  if (url.protocol !== "https:" && url.hostname !== "localhost") {
+  if (url.protocol !== "https:") {
     throw new Error("رابط الموقع يجب أن يكون https لأن كلمات مرور التطبيقات تتطلب اتصالاً آمناً.");
+  }
+  if (url.username || url.password) {
+    throw new Error("رابط الموقع يجب ألا يحتوي على اسم مستخدم أو كلمة مرور بداخله.");
+  }
+  if (isPrivateHostname(url.hostname)) {
+    throw new Error("لا يمكن ربط عنوان داخلي أو محلي — استخدم نطاق موقعك العام.");
+  }
+  if (url.port && url.port !== "443") {
+    throw new Error("استخدم رابط الموقع العام على المنفذ القياسي (443) بلا منفذ مخصّص.");
   }
   return `${url.origin}${url.pathname.replace(/\/+$/, "")}`;
 }
