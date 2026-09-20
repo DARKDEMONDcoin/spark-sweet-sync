@@ -109,7 +109,8 @@ async function loadWordPressConfig(
     .eq("provider", "wordpress")
     .maybeSingle();
   if (error) throw new Error(error.message);
-  const config = data?.config as WordPressConfig | undefined;
+  const { openConfig } = await import("./credential-crypto.server");
+  const config = await openConfig<WordPressConfig>(data?.config);
   if (!config?.siteUrl || !config.username || !config.appPassword) {
     throw new Error("موقع ووردبريس غير مربوط بعد — اربطه من صفحة التكاملات.");
   }
