@@ -52,7 +52,11 @@ function ApprovalsPage() {
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [reason, setReason] = useState("");
 
-  const pending = (tasks ?? []).filter((t) => t.status === "review");
+  // الطابور ينقسم: ما ينتظر قرارك فعلاً، وأرشيف تجاوز ثلاثين يوماً بلا قرار.
+  // خلطهما كان يخنق الشاشة ويُظهر رقماً لا يعبّر عن عمل معلّق حقيقي.
+  const allPending = (tasks ?? []).filter((t) => t.status === "review");
+  const { live: pending, stale: archived } = splitReview(allPending);
+  const [showArchive, setShowArchive] = useState(false);
 
   const act = async (id: string, status: "done" | "rejected") => {
     setBusyId(id);
