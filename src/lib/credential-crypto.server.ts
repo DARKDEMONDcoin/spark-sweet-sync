@@ -10,8 +10,13 @@ function b64(bytes: Uint8Array): string {
   return btoa(binary);
 }
 
-function unb64(text: string): Uint8Array {
-  return Uint8Array.from(atob(text), (c) => c.charCodeAt(0));
+function unb64(text: string): Uint8Array<ArrayBuffer> {
+  const bytes = new Uint8Array(new ArrayBuffer(text.length));
+  for (let i = 0; i < text.length; i += 1) bytes[i] = text.charCodeAt(i);
+  const raw = atob(text);
+  const out = new Uint8Array(new ArrayBuffer(raw.length));
+  for (let i = 0; i < raw.length; i += 1) out[i] = raw.charCodeAt(i);
+  return out;
 }
 
 async function keyMaterial(): Promise<CryptoKey | null> {
