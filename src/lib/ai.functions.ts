@@ -7,7 +7,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { freeChat } from "@/lib/nour-research.server";
 import { actionTruthRules, sanitizeActionClaims } from "@/lib/action-claims";
-import { dedupeParagraphs } from "@/lib/post-format";
+import { dedupeParagraphs, dropEchoedSection } from "@/lib/post-format";
 import {
   craft,
   evidenceRules,
@@ -1222,7 +1222,7 @@ export async function runEmployeeTurn(
     reply = fillPlaceholders(reply, workspace.name, ws.website ?? null, brandProducts);
     reply = sanitizeActionClaims(reply, connected);
     // منع التكرار: أحياناً يعيد النموذج نفس الفقرة مرتين (ملخص + مخرج) — نُبقي أول ظهور فقط.
-    reply = dedupeParagraphs(reply);
+    reply = dropEchoedSection(dedupeParagraphs(reply));
 
     // حَكَم الجودة يعمل بالتوازي مع توليد الصورة: مراجعة إلزامية للمخرجات الطويلة
     // وإصلاح واحد موجّه عند الرسوب، بلا إضافة أي انتظار فوق زمن الصورة.
