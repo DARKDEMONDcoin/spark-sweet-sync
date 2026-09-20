@@ -12,14 +12,16 @@ import {
   Sparkles,
   Users,
   Workflow,
+  X,
   Zap,
 } from "lucide-react";
 
 import { PageShell, PageHero, CtaBand } from "@/components/site/PageShell";
 import { Reveal } from "@/components/Reveal";
-import { plans, priceOf, currencyOf } from "@/data/pricing";
+import { plans, priceOf, currencyOf, yearlyDiscount } from "@/data/pricing";
 import { useRegion } from "@/hooks/use-region";
 import { RegionPicker } from "@/components/site/Portrait";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -61,129 +63,122 @@ function PricingPage() {
   const { country } = useRegion();
   const cur = currencyOf(country);
   const [mobilePlan, setMobilePlan] = useState<(typeof plans)[number]["id"]>("growth");
+  const [yearly, setYearly] = useState(true);
   const selected = plans.find((plan) => plan.id === mobilePlan);
   if (!selected) return null;
   return (
-    <PageShell className="bg-background">
-      {/* موبايل — نفس تكوين صفحات الترقية العالمية: عنوان كبير، بطاقة مزايا، اختيار الباقة، زر داكن */}
-      <section className="px-5 pb-14 md:hidden" style={{ paddingTop: "6.75rem" }}>
-        <div className="mx-auto w-full max-w-md">
-          <h1 className="text-center font-display text-[2rem] font-black leading-[1.25]">
-            ارتقِ بمشروعك
-            <br />
-            مع فريق سهل
-          </h1>
-          <div className="mt-4 flex justify-center">
-            <RegionPicker className="[&>span:first-child]:hidden" />
+    <PageShell className="sahl-pricing-shell bg-background" hideFooterOnMobile>
+      <section className="sahl-upgrade md:hidden" aria-labelledby="mobile-pricing-title">
+        <div className="sahl-upgrade-dots" aria-hidden="true" />
+        <div className="sahl-upgrade-inner">
+          <div className="sahl-upgrade-topbar">
+            <span aria-hidden="true" />
+            <Button asChild variant="ghost" size="icon" className="sahl-upgrade-close">
+              <Link to="/" aria-label="إغلاق صفحة الأسعار">
+                <X strokeWidth={1.8} />
+              </Link>
+            </Button>
           </div>
 
-          <div className="mt-8 rounded-[2rem] border border-border bg-card px-6 py-3 shadow-card">
-            <ul>
-              {selected.perks.map((perk, i) => {
-                const Icon = perkIcons[i % perkIcons.length] ?? Sparkles;
-                return (
-                  <li
-                    key={perk}
-                    className="flex items-center justify-between gap-4 py-[1.15rem]"
-                  >
-                    <span className="min-w-0 text-[1.02rem] font-semibold leading-7">
-                      {perk}
-                    </span>
-                    <Icon className="size-[1.4rem] shrink-0 text-foreground" strokeWidth={1.6} />
-                  </li>
-                );
-              })}
-            </ul>
+          <header className="sahl-upgrade-heading">
+            <p>فريقك الرقمي يبدأ من هنا</p>
+            <h1 id="mobile-pricing-title">اختر باقتك</h1>
+          </header>
+
+          <div className="sahl-upgrade-tabs" role="tablist" aria-label="باقات سهل">
+            {plans.map((plan) => (
+              <Button
+                key={plan.id}
+                type="button"
+                variant="ghost"
+                role="tab"
+                aria-selected={mobilePlan === plan.id}
+                onClick={() => setMobilePlan(plan.id)}
+                className={mobilePlan === plan.id ? "is-active" : undefined}
+              >
+                {plan.name}
+              </Button>
+            ))}
           </div>
 
-          <div className="mt-7 grid gap-4" role="radiogroup" aria-label="اختر الباقة">
-            {plans.map((plan) => {
-              const active = mobilePlan === plan.id;
-              return (
-                <button
-                  key={plan.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={active}
-                  onClick={() => setMobilePlan(plan.id)}
-                  className={`flex items-center justify-between gap-4 rounded-[1.4rem] border-2 bg-card px-6 py-5 text-right transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    active ? "border-foreground shadow-card" : "border-border/80"
-                  }`}
-                >
-                  <span className="min-w-0">
-                    <span className="flex flex-wrap items-center gap-2">
-                      <span className="text-[1.05rem] font-bold">باقة {plan.name}</span>
-                      {plan.highlight ? (
-                        <span className="rounded-full bg-primary/12 px-3 py-1 text-[0.72rem] font-bold text-primary">
-                          الأكثر اختياراً
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="mt-1.5 block font-display text-[1.35rem] font-black leading-none">
-                      {plan.monthly === null ? (
-                        "حسب الطلب"
-                      ) : (
-                        <>
-                          {priceOf(plan, false, country)}{" "}
-                          <span className="text-sm font-semibold text-muted-foreground">
-                            {cur.label} / شهرياً
-                          </span>
-                        </>
-                      )}
-                    </span>
-                  </span>
-                  <span
-                    className={`grid size-7 shrink-0 place-items-center rounded-full border-[2.5px] transition-colors ${
-                      active ? "border-foreground" : "border-border"
-                    }`}
-                  >
-                    {active ? (
-                      <span className="size-3.5 rounded-full bg-foreground" />
-                    ) : null}
-                  </span>
-                </button>
-              );
-            })}
+          <div className="sahl-upgrade-plan" role="tabpanel">
+            <div className="sahl-upgrade-plan-title">
+              <div className="min-w-0">
+                <h2>باقة {selected.name}</h2>
+                <p>{selected.tag}</p>
+              </div>
+              {selected.highlight ? <span>الأكثر اختياراً</span> : null}
+            </div>
+
+            <div className="sahl-upgrade-perks">
+              <ul>
+                {selected.perks.map((perk, index) => {
+                  const Icon = perkIcons[index % perkIcons.length] ?? Sparkles;
+                  const tone = index % 3 === 0 ? "primary" : index % 3 === 1 ? "gold" : "jade";
+                  return (
+                    <li key={perk}>
+                      <Icon data-tone={tone} strokeWidth={1.8} />
+                      <span>{perk}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            <div className="sahl-upgrade-billing" role="radiogroup" aria-label="دورة الفوترة">
+              <Button
+                type="button"
+                variant="ghost"
+                role="radio"
+                aria-checked={!yearly}
+                onClick={() => setYearly(false)}
+                className={!yearly ? "is-selected" : undefined}
+              >
+                <span className="sahl-upgrade-radio" aria-hidden="true"><i /></span>
+                <span className="sahl-upgrade-cycle">شهري</span>
+                <strong>{selected.monthly === null ? "عرض مخصص" : `${priceOf(selected, false, country)} ${cur.label}`}</strong>
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                role="radio"
+                aria-checked={yearly}
+                onClick={() => setYearly(true)}
+                className={yearly ? "is-selected" : undefined}
+              >
+                <span className="sahl-upgrade-radio" aria-hidden="true"><i /></span>
+                <span className="sahl-upgrade-cycle">سنوي <small>وفّر {yearlyDiscount * 100}%</small></span>
+                <strong>{selected.monthly === null ? "عرض مخصص" : `${priceOf(selected, true, country)} ${cur.label}`}</strong>
+              </Button>
+            </div>
+
+            <p className="sahl-upgrade-note">
+              {selected.monthly === null
+                ? "عرض مرن حسب عدد الفروع والفريق، مع إعداد ودعم مخصصين."
+                : yearly
+                  ? `${priceOf(selected, true, country)} ${cur.label} شهرياً، تُدفع سنوياً بعد التجربة المجانية.`
+                  : `${priceOf(selected, false, country)} ${cur.label} شهرياً بعد ١٤ يوماً مجاناً.`}
+            </p>
+
+            <Button asChild className="sahl-upgrade-cta">
+              {selected.id === "scale" ? (
+                <Link to="/contact">{selected.cta}</Link>
+              ) : (
+                <Link to="/auth" search={{ mode: "signup", plan: selected.id }}>
+                  {selected.cta}
+                </Link>
+              )}
+            </Button>
+
+            <p className="sahl-upgrade-trust">
+              <ShieldCheck /> بدون بطاقة · إلغاء فوري · بيانات مشفّرة
+            </p>
           </div>
 
-          <p className="mt-7 text-center text-[0.85rem] leading-6 text-muted-foreground">
-            {selected.monthly === null
-              ? "حل مخصص لحجم فريقك وعلاماتك — تحدّث معنا وسنجهّز عرضاً يناسبك."
-              : "١٤ يوماً مجاناً بكل المزايا، بدون بطاقة. يمكن الإلغاء في أي وقت."}
-          </p>
-
-          {selected.id === "scale" ? (
-            <Link
-              to="/contact"
-              className="mt-5 block w-full rounded-2xl bg-foreground py-[1.15rem] text-center text-[1.05rem] font-bold text-background transition-transform active:scale-[0.98]"
-            >
-              {selected.cta}
-            </Link>
-          ) : (
-            <Link
-              to="/auth"
-              search={{ mode: "signup", plan: selected.id }}
-              className="mt-5 block w-full rounded-2xl bg-foreground py-[1.15rem] text-center text-[1.05rem] font-bold text-background transition-transform active:scale-[0.98]"
-            >
-              {selected.cta}
-            </Link>
-          )}
-
-          <p className="mt-4 flex items-center justify-center gap-1.5 text-[0.75rem] font-semibold text-muted-foreground">
-            <ShieldCheck className="size-4 text-jade-deep" /> بدون بطاقة · إلغاء فوري · بيانات
-            مشفّرة
-          </p>
-
-          <nav className="mt-8 flex items-center justify-center gap-8 text-[0.85rem] font-medium text-muted-foreground">
-            <Link to="/terms" className="transition-colors hover:text-foreground">
-              الشروط
-            </Link>
-            <Link to="/privacy" className="transition-colors hover:text-foreground">
-              الخصوصية
-            </Link>
-            <Link to="/refunds" className="transition-colors hover:text-foreground">
-              الاسترداد
-            </Link>
+          <nav className="sahl-upgrade-legal" aria-label="روابط قانونية">
+            <Link to="/terms">الشروط</Link><span>·</span>
+            <Link to="/privacy">الخصوصية</Link><span>·</span>
+            <Link to="/refunds">الاسترداد</Link>
           </nav>
         </div>
       </section>

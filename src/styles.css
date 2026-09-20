@@ -346,6 +346,379 @@
   }
 }
 
+/* شاشة ترقية الأسعار على الهاتف */
+@keyframes sahl-pricing-dots-drift {
+  0%,
+  100% {
+    background-position: 0 0, 14px 14px, 7px 21px;
+    opacity: 0.48;
+  }
+  50% {
+    background-position: 14px 7px, 0 21px, 21px 7px;
+    opacity: 0.72;
+  }
+}
+
+@media (max-width: 767px) {
+  .sahl-pricing-shell {
+    height: 100svh;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .sahl-pricing-shell > .sahl-white-nav {
+    display: none;
+  }
+
+  .sahl-pricing-shell > main {
+    height: 100%;
+  }
+
+  .sahl-upgrade {
+    position: relative;
+    isolation: isolate;
+    height: 100%;
+    overflow: hidden;
+    background: color-mix(in oklab, var(--background) 96%, var(--gold-soft));
+  }
+
+  .sahl-upgrade-dots {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background-image:
+      radial-gradient(circle, color-mix(in oklab, var(--primary) 35%, transparent) 1.1px, transparent 1.6px),
+      radial-gradient(circle, color-mix(in oklab, var(--gold) 32%, transparent) 1px, transparent 1.5px),
+      radial-gradient(circle, color-mix(in oklab, var(--jade) 30%, transparent) 1px, transparent 1.5px);
+    background-position: 0 0, 14px 14px, 7px 21px;
+    background-size: 42px 42px, 42px 42px, 42px 42px;
+    mask-image: linear-gradient(to bottom, black, transparent 92%);
+    animation: sahl-pricing-dots-drift 12s ease-in-out infinite;
+  }
+
+  .sahl-upgrade-inner {
+    display: grid;
+    grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+    width: min(100%, 30rem);
+    height: 100%;
+    margin-inline: auto;
+    padding: max(0.5rem, env(safe-area-inset-top)) 1rem max(0.4rem, env(safe-area-inset-bottom));
+  }
+
+  .sahl-upgrade-topbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    min-height: 2rem;
+  }
+
+  .sahl-upgrade-close {
+    grid-column: 2;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--card) 76%, transparent);
+    backdrop-filter: blur(12px);
+  }
+
+  .sahl-upgrade-close svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .sahl-upgrade-heading {
+    text-align: center;
+    line-height: 1.2;
+  }
+
+  .sahl-upgrade-heading p {
+    color: var(--muted-foreground);
+    font-size: 0.68rem;
+    font-weight: 700;
+  }
+
+  .sahl-upgrade-heading h1,
+  .sahl-upgrade-plan-title h2 {
+    font-family: "Almarai", var(--font-sans);
+    letter-spacing: 0;
+  }
+
+  .sahl-upgrade-heading h1 {
+    margin-top: 0.1rem;
+    font-size: clamp(1.35rem, 5.8vw, 1.75rem);
+    font-weight: 800;
+  }
+
+  .sahl-upgrade-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.25rem;
+    margin-top: 0.45rem;
+    padding: 0.2rem;
+    border: 1px solid var(--border);
+    border-radius: 0.8rem;
+    background: color-mix(in oklab, var(--card) 72%, transparent);
+    backdrop-filter: blur(14px);
+  }
+
+  .sahl-upgrade-tabs button {
+    min-width: 0;
+    height: 1.9rem;
+    padding-inline: 0.3rem;
+    border-radius: 0.58rem;
+    color: var(--muted-foreground);
+    font-size: 0.72rem;
+    font-weight: 800;
+  }
+
+  .sahl-upgrade-tabs button.is-active {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow: 0 6px 18px color-mix(in oklab, var(--primary) 24%, transparent);
+  }
+
+  .sahl-upgrade-plan {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto auto auto auto;
+    min-height: 0;
+    padding-top: 0.48rem;
+  }
+
+  .sahl-upgrade-plan-title {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.55rem;
+  }
+
+  .sahl-upgrade-plan-title h2 {
+    font-size: clamp(1.12rem, 4.8vw, 1.45rem);
+    font-weight: 800;
+    line-height: 1.25;
+  }
+
+  .sahl-upgrade-plan-title p {
+    overflow: hidden;
+    color: var(--muted-foreground);
+    font-size: 0.64rem;
+    font-weight: 600;
+    line-height: 1.35;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sahl-upgrade-plan-title > span {
+    flex-shrink: 0;
+    padding: 0.2rem 0.48rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--gold) 16%, var(--card));
+    color: var(--gold-deep);
+    font-size: 0.56rem;
+    font-weight: 800;
+  }
+
+  .sahl-upgrade-perks {
+    min-height: 0;
+    margin-top: 0.42rem;
+    padding: 0.34rem 0.65rem;
+    border: 1px solid color-mix(in oklab, var(--border) 72%, var(--gold));
+    border-radius: 0.9rem;
+    background: var(--glass-tint);
+    box-shadow: var(--glass-shadow);
+    backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  }
+
+  .sahl-upgrade-perks ul {
+    display: grid;
+    align-content: space-evenly;
+    height: 100%;
+  }
+
+  .sahl-upgrade-perks li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 1.34rem;
+    border-bottom: 1px solid color-mix(in oklab, var(--border) 58%, transparent);
+    font-size: 0.68rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .sahl-upgrade-perks li:last-child {
+    border-bottom: 0;
+  }
+
+  .sahl-upgrade-perks svg {
+    width: 0.88rem;
+    height: 0.88rem;
+  }
+
+  .sahl-upgrade-perks svg[data-tone="primary"] { color: var(--primary); }
+  .sahl-upgrade-perks svg[data-tone="gold"] { color: var(--gold-deep); }
+  .sahl-upgrade-perks svg[data-tone="jade"] { color: var(--jade-deep); }
+
+  .sahl-upgrade-billing {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+    margin-top: 0.45rem;
+  }
+
+  .sahl-upgrade-billing button {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 0.42rem;
+    width: 100%;
+    height: 3.25rem;
+    padding: 0.38rem 0.52rem;
+    border: 1.5px solid var(--border);
+    border-radius: 0.78rem;
+    background: color-mix(in oklab, var(--card) 82%, transparent);
+    text-align: right;
+  }
+
+  .sahl-upgrade-billing button.is-selected {
+    border-color: var(--primary);
+    background: color-mix(in oklab, var(--primary) 5%, var(--card));
+  }
+
+  .sahl-upgrade-radio {
+    grid-row: 1 / 3;
+    align-self: center;
+    display: grid;
+    place-items: center;
+    width: 1rem;
+    height: 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+  }
+
+  .is-selected .sahl-upgrade-radio { border-color: var(--primary); }
+  .is-selected .sahl-upgrade-radio i {
+    width: 0.52rem;
+    height: 0.52rem;
+    border-radius: 999px;
+    background: var(--primary);
+  }
+
+  .sahl-upgrade-cycle {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.67rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .sahl-upgrade-cycle small {
+    padding: 0.14rem 0.25rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--gold) 16%, var(--card));
+    color: var(--gold-deep);
+    font-size: 0.49rem;
+    white-space: nowrap;
+  }
+
+  .sahl-upgrade-billing strong {
+    align-self: end;
+    overflow: hidden;
+    font-family: "Almarai", var(--font-sans);
+    font-size: 0.72rem;
+    font-weight: 800;
+    line-height: 1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sahl-upgrade-note {
+    margin-top: 0.28rem;
+    color: var(--muted-foreground);
+    font-size: 0.58rem;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: center;
+  }
+
+  .sahl-upgrade-cta {
+    width: 100%;
+    height: 2.7rem;
+    margin-top: 0.35rem;
+    border-radius: 0.78rem;
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-family: "Almarai", var(--font-sans);
+    font-size: 0.8rem;
+    font-weight: 800;
+    box-shadow: 0 12px 28px color-mix(in oklab, var(--primary) 24%, transparent);
+  }
+
+  .sahl-upgrade-trust {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    margin-top: 0.28rem;
+    color: var(--muted-foreground);
+    font-size: 0.53rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .sahl-upgrade-trust svg {
+    width: 0.72rem;
+    height: 0.72rem;
+    color: var(--jade-deep);
+  }
+
+  .sahl-upgrade-legal {
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    gap: 0.35rem;
+    min-height: 1rem;
+    color: var(--muted-foreground);
+    font-size: 0.5rem;
+    font-weight: 600;
+    line-height: 1;
+  }
+}
+
+@media (max-width: 767px) and (max-height: 700px) {
+  .sahl-upgrade-inner {
+    padding-inline: 0.78rem;
+  }
+
+  .sahl-upgrade-topbar { min-height: 1.65rem; }
+  .sahl-upgrade-close { width: 1.65rem; height: 1.65rem; }
+  .sahl-upgrade-heading p { display: none; }
+  .sahl-upgrade-heading h1 { margin-top: 0; font-size: 1.22rem; }
+  .sahl-upgrade-tabs { margin-top: 0.28rem; }
+  .sahl-upgrade-tabs button { height: 1.72rem; }
+  .sahl-upgrade-plan { padding-top: 0.28rem; }
+  .sahl-upgrade-plan-title h2 { font-size: 1rem; }
+  .sahl-upgrade-plan-title p { font-size: 0.56rem; }
+  .sahl-upgrade-perks { margin-top: 0.25rem; padding-block: 0.2rem; }
+  .sahl-upgrade-perks li { min-height: 1.08rem; font-size: 0.6rem; }
+  .sahl-upgrade-perks svg { width: 0.76rem; height: 0.76rem; }
+  .sahl-upgrade-billing { margin-top: 0.28rem; }
+  .sahl-upgrade-billing button { height: 2.9rem; }
+  .sahl-upgrade-note { margin-top: 0.2rem; font-size: 0.52rem; }
+  .sahl-upgrade-cta { height: 2.35rem; margin-top: 0.25rem; }
+  .sahl-upgrade-trust { margin-top: 0.2rem; }
+  .sahl-upgrade-legal { min-height: 0.78rem; font-size: 0.46rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sahl-upgrade-dots {
+    animation: none;
+  }
+}
+
 /* تدفق التكاملات في الصفحة الرئيسية */
 @utility integration-grid {
   background-image: radial-gradient(circle, oklch(1 0 0 / 0.11) 1px, transparent 1.5px);
