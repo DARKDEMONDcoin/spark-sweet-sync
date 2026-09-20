@@ -1,6 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, Minus, ShieldCheck } from "lucide-react";
+import {
+  BadgeCheck,
+  BarChart3,
+  Check,
+  Image,
+  Inbox,
+  Link2,
+  Minus,
+  ShieldCheck,
+  Sparkles,
+  Users,
+  Workflow,
+  Zap,
+} from "lucide-react";
 
 import { PageShell, PageHero, CtaBand } from "@/components/site/PageShell";
 import { Reveal } from "@/components/Reveal";
