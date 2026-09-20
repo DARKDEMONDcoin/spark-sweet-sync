@@ -1078,8 +1078,11 @@ export async function runEmployeeTurn(
         ? userImagePrompt.length > 2
         : imageMode !== "off" &&
           intent === "work" &&
-          // طلب الصورة الصريح ينفّذه أي موظف؛ التوليد التلقائي يبقى للموظفين البصريين.
-          (explicitImage || VISUAL_EMPLOYEES.has(data.employeeId)) &&
+          // طلب الصورة الصريح ينفّذه أي موظف؛ التوليد التلقائي يبقى للموظفين
+          // البصريين، وبشرط أن يكون المخرج نفسه بصرياً. وصف ميتا أو قائمة كلمات
+          // أو تدقيق تقني لا يحتاج صورة: توليدها هدر وقت وتكلفة بلا فائدة.
+          (explicitImage ||
+            (VISUAL_EMPLOYEES.has(data.employeeId) && deliverableWantsVisual(deliverables))) &&
           attachments.every((a) => a.type !== "image");
     // توليد الصورة يبدأ الآن ويسير بالتوازي مع مراجعة الجودة — كانا متسلسلين فيضيفان
     // نحو دقيقة كاملة على كل رد بصري.
