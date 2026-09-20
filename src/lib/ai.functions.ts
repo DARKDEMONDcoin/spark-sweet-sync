@@ -7,7 +7,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { freeChat } from "@/lib/nour-research.server";
 import { actionTruthRules, sanitizeActionClaims } from "@/lib/action-claims";
-import { dedupeParagraphs } from "@/lib/post-format";
+import { dedupeParagraphs, dropEchoedSection } from "@/lib/post-format";
 import {
   craft,
   evidenceRules,
@@ -1214,14 +1214,15 @@ export async function runEmployeeTurn(
       const head = postBody.slice(0, 40);
       if (postBody.length > 60 && head && !reply.includes(head)) {
         const note = reply.trim();
-        reply = note ? `${postBody}\n\n---\n\n**ملاحظة للمستخدم:** ${note}` : postBody;
+        // «ملاحظة للمستخدم» تسمية داخلية لا يليق أن يقرأها المالك — نكتبها باسم الموظف.
+        reply = note ? `${postBody}\n\n---\n\n**ملاحظة من ${persona.name}:** ${note}` : postBody;
       }
     }
 
     reply = fillPlaceholders(reply, workspace.name, ws.website ?? null, brandProducts);
     reply = sanitizeActionClaims(reply, connected);
     // منع التكرار: أحياناً يعيد النموذج نفس الفقرة مرتين (ملخص + مخرج) — نُبقي أول ظهور فقط.
-    reply = dedupeParagraphs(reply);
+    reply = dropEchoedSection(dedupeParagraphs(reply));
 
     // حَكَم الجودة يعمل بالتوازي مع توليد الصورة: مراجعة إلزامية للمخرجات الطويلة
     // وإصلاح واحد موجّه عند الرسوب، بلا إضافة أي انتظار فوق زمن الصورة.

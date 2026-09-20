@@ -43,6 +43,21 @@ export const ARTICLE_SKILLS = new Set([
   "visual-concept",
 ]);
 
+/** قدرات مخرجها بصري بطبيعته — الصورة جزء من التسليم مهما كان طول النص. */
+export const VISUAL_SKILLS = new Set([
+  "social-post",
+  "post-visual",
+  "carousel",
+  "reel-script",
+  "launch-campaign",
+  "weekly-batch",
+  "ugc-testimonial",
+  "design-image",
+  "ad-creative",
+  "product-shots",
+  "visual-concept",
+]);
+
 export const evidenceRules = [
   "استخدم كتلة «أدلة ميدانية» أدناه كمصدر وحيد للأرقام والمنافسين والكلمات — لا تخترع بيانات غيرها.",
   "اذكر مصدر كل رقم مهم (Search Console، اقتراحات البحث، نتائج البحث، تحليل الصفحة).",
@@ -983,7 +998,11 @@ export async function executeSkill(
 
   // صورة رئيسية مجانية لكل مخرج تحريري (مقال/صفحة/حزمة نشر) — مثل Penny وأدق منها:
   // نستخدم مزوّداً بلا مفتاح وبلا حد يومي، والرابط دائم صالح للنشر مباشرة.
-  if (ARTICLE_SKILLS.has(skill.id)) {
+  // المخرج النصي البحت (عناوين ميتا، قائمة عناوين، فقرة قصيرة) لا يحتاج صورة:
+  // توليدها وقت وتكلفة بلا فائدة، فنقصرها على المخرجات البصرية والتحريرية الكاملة.
+  const visualSkill = VISUAL_SKILLS.has(skill.id);
+  const longEnoughForHero = output.replace(/\s+/g, " ").trim().length >= 1200;
+  if (ARTICLE_SKILLS.has(skill.id) && (visualSkill || longEnoughForHero)) {
     try {
       const { ownedHeroImage, heroPrompt, extractImagePrompt, stripImagePrompt } =
         await import("./image-gen.server");

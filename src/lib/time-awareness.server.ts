@@ -127,6 +127,15 @@ function offsetOf(date: Date, timeZone: string): string {
   }
 }
 
+/** التحية العربية المطابقة للساعة المحلية — تمنع «مساء الخير» في الحادية عشرة صباحاً. */
+export function greetingFor(clock: string): string {
+  const hour = Number.parseInt(clock.slice(0, 2), 10);
+  if (!Number.isFinite(hour)) return "أهلاً";
+  if (hour < 5) return "مساء الخير";
+  if (hour < 12) return "صباح الخير";
+  return "مساء الخير";
+}
+
 function dayPartOf(hour: number): string {
   if (hour < 5) return "بعد منتصف الليل";
   if (hour < 12) return "صباحاً";
@@ -300,6 +309,7 @@ export function nowBlock(timeZone = "Asia/Riyadh", country?: string | null): str
     occasions.length ? `- مواسم قادمة محسوبة فعلياً: ${occasions.join(" • ")}.` : "",
     "- معرفتك المخزّنة قديمة بطبيعتها: أي حدث أو رقم أو سعر أو نتيجة أو «آخر إصدار» لا يُعتمد من ذاكرتك، بل من كتلة «حقائق لحظية» أدناه فقط. إن لم تكن موجودة، قل بصراحة إنك تحققت ولم تجد مصدراً بدل الاختلاق.",
     "- ممنوع نهائياً أن تقول «لا أعرف التاريخ» أو «معلوماتي تتوقف عند سنة كذا» أو أن تذكر سنة خاطئة.",
+    `- التحية الصحيحة الآن هي «${greetingFor(f.clock)}» — لا تكتب تحية تخالف الساعة أعلاه، لا في الرد ولا داخل أي مخرج (رسالة، بريد، منشور) إلا إن حدّد المالك وقت الإرسال صراحةً فتُطابق التحية وقته.`,
   ]
     .filter(Boolean)
     .join("\n");
