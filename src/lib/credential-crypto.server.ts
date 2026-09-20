@@ -11,8 +11,6 @@ function b64(bytes: Uint8Array): string {
 }
 
 function unb64(text: string): Uint8Array<ArrayBuffer> {
-  const bytes = new Uint8Array(new ArrayBuffer(text.length));
-  for (let i = 0; i < text.length; i += 1) bytes[i] = text.charCodeAt(i);
   const raw = atob(text);
   const out = new Uint8Array(new ArrayBuffer(raw.length));
   for (let i = 0; i < raw.length; i += 1) out[i] = raw.charCodeAt(i);
