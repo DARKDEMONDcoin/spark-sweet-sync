@@ -22,6 +22,7 @@ import { taskStatusLabel } from "@/data/app";
 import { useIntegrations, useProfile, useTasks, useWorkspace } from "@/lib/data";
 import { Portrait } from "@/components/site/Portrait";
 import { BrandLoader } from "@/components/site/BrandLoader";
+import { splitReview } from "@/lib/task-freshness";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -105,7 +106,9 @@ function AppHome() {
   const { data: integrations } = useIntegrations(workspace?.id);
 
   const list = tasks ?? [];
-  const review = list.filter((t) => t.status === "review");
+  // الطابور الحيّ فقط: ما مضى عليه شهر بلا قرار صار أرشيفاً، وإبقاؤه في
+  // العدّاد كان يخنق الشاشة برقم لا يعبّر عن قرار معلّق فعلاً.
+  const review = splitReview(list.filter((t) => t.status === "review")).live;
   const running = list.filter((t) => t.status === "running");
   const done = list.filter((t) => t.status === "done");
   const connected = (integrations ?? []).filter((i) => i.status === "connected").length;

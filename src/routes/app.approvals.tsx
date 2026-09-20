@@ -12,6 +12,7 @@ import { sanitizePostBody } from "@/lib/post-format";
 import { BrandLoader } from "@/components/site/BrandLoader";
 import { Portrait } from "@/components/site/Portrait";
 import { saveLearningFeedback } from "@/lib/learning.functions";
+import { splitReview, STALE_REVIEW_DAYS } from "@/lib/task-freshness";
 
 export const Route = createFileRoute("/app/approvals")({
   head: () => ({
@@ -52,7 +53,11 @@ function ApprovalsPage() {
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [reason, setReason] = useState("");
 
-  const pending = (tasks ?? []).filter((t) => t.status === "review");
+  // الطابور ينقسم: ما ينتظر قرارك فعلاً، وأرشيف تجاوز ثلاثين يوماً بلا قرار.
+  // خلطهما كان يخنق الشاشة ويُظهر رقماً لا يعبّر عن عمل معلّق حقيقي.
+  const allPending = (tasks ?? []).filter((t) => t.status === "review");
+  const { live: pending, stale: archived } = splitReview(allPending);
+  const [showArchive, setShowArchive] = useState(false);
 
   const act = async (id: string, status: "done" | "rejected") => {
     setBusyId(id);
@@ -68,7 +73,7 @@ function ApprovalsPage() {
     try {
       await update.mutateAsync({ id, patch: steps ? { status, steps } : { status } });
       if (workspace?.id) {
-        const task = pending.find((item) => item.id === id);
+        const task = allPending.find((item) => item.id === id);
         if (task)
           await saveFeedback({
             data: {
@@ -227,6 +232,60 @@ function ApprovalsPage() {
           })}
         </div>
       )}
+
+      {archived.length ? (
+        <section className="mt-8 rounded-3xl border border-border bg-card p-5 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-display text-base font-black">
+                أرشيف {archived.length} مخرجاً قديماً
+              </h2>
+              <p className="mt-1 text-sm text-ink-soft">
+                مضى عليها أكثر من {STALE_REVIEW_DAYS} يوماً بلا قرار، فخرجت من العدّاد ومن إحاطة
+                أمَل حتى لا يبني الفريق عليها إشارات قديمة.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowArchive((v) => !v)}
+              className="min-h-10 rounded-full border border-border px-4 text-sm font-bold transition-colors hover:bg-secondary"
+            >
+              {showArchive ? "إخفاء الأرشيف" : "عرض الأرشيف"}
+            </button>
+          </div>
+          {showArchive ? (
+            <ul className="mt-4 grid gap-2">
+              {archived.map((a) => (
+                <li
+                  key={a.id}
+                  className="flex flex-wrap items-center gap-3 rounded-2xl bg-secondary/50 px-4 py-3 text-sm"
+                >
+                  <span className="min-w-0 flex-1 font-bold break-words">{a.title}</span>
+                  <span className="text-muted-foreground">
+                    {getMember(a.employee_id)?.name ?? a.employee_id}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => void act(a.id, "done")}
+                    disabled={busyId === a.id}
+                    className="min-h-9 rounded-full border border-border px-3 font-bold disabled:opacity-60"
+                  >
+                    اعتماد
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void act(a.id, "rejected")}
+                    disabled={busyId === a.id}
+                    className="min-h-9 rounded-full px-3 font-bold text-muted-foreground disabled:opacity-60"
+                  >
+                    رفض
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </section>
+      ) : null}
     </AppShell>
   );
 }

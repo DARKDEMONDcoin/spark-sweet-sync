@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type { Database } from "@/integrations/supabase/types";
 import { timezoneForCountry } from "./time-awareness.server";
+import { staleBefore } from "./task-freshness";
 
 type Admin = SupabaseClient<Database>;
 
@@ -76,9 +77,10 @@ export async function buildBriefing(admin: Admin, workspaceId: string): Promise<
   ] = await Promise.all([
     admin
       .from("tasks")
-      .select("id, title, employee_id")
+      .select("id, title, employee_id, created_at, updated_at")
       .eq("workspace_id", workspaceId)
       .eq("status", "review")
+      .gte("updated_at", staleBefore())
       .order("created_at", { ascending: false })
       .limit(6),
     admin
@@ -166,8 +168,17 @@ export async function buildBriefing(admin: Admin, workspaceId: string): Promise<
 
   const h = localHour(tz);
   const greeting = h < 12 ? "صباح الخير" : h < 18 ? "مساء الخير" : "مساء النور";
+  // العدد الحقيقي للمخرجات الحيّة المنتظرة — لا طول القائمة المقطوعة عند 6،
+  // فقد كانت الإحاطة تقول «6 بانتظار موافقتك» مهما كان العدد الفعلي.
+  const { count: reviewCount } = await admin
+    .from("tasks")
+    .select("id", { count: "exact", head: true })
+    .eq("workspace_id", workspaceId)
+    .eq("status", "review")
+    .gte("updated_at", staleBefore());
+  const pendingCount = reviewCount ?? review?.length ?? 0;
   const parts: string[] = [];
-  if (review?.length) parts.push(`${review.length} بانتظار موافقتك`);
+  if (pendingCount) parts.push(`${pendingCount} بانتظار موافقتك`);
   if (posts?.length) parts.push(`${posts.length} منشور اليوم`);
   if (rankMoves.length) parts.push(`${rankMoves.filter((m) => m.delta > 0).length} كلمة تقدّمت`);
   const headline = parts.length ? parts.join(" · ") : "يوم هادئ — استغلّه بفكرة جديدة من سِراج.";
