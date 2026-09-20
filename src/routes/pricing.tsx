@@ -66,7 +66,7 @@ function PricingPage() {
   return (
     <PageShell className="bg-background">
       {/* موبايل — نفس تكوين صفحات الترقية العالمية: عنوان كبير، بطاقة مزايا، اختيار الباقة، زر داكن */}
-      <section className="px-5 pb-14 pt-32 md:hidden">
+      <section className="px-5 pb-14 md:hidden" style={{ paddingTop: "6.75rem" }}>
         <div className="mx-auto w-full max-w-md">
           <h1 className="text-center font-display text-[2rem] font-black leading-[1.25]">
             ارتقِ بمشروعك
