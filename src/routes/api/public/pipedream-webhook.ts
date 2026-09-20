@@ -50,6 +50,25 @@ export const Route = createFileRoute("/api/public/pipedream-webhook")({
 
         const kind = (payload.event ?? payload.event_type ?? "").toUpperCase();
 
+        // منع التكرار: إعادة إرسال نفس الحدث من الوسيط لا تُنفَّذ مرتين.
+        const { recordIntegrationEvent, fingerprint } = await import(
+          "@/lib/integration-events.server"
+        );
+        const fresh = await recordIntegrationEvent(supabaseAdmin, {
+          workspaceId,
+          provider,
+          eventKey: fingerprint([
+            "pipedream",
+            kind,
+            accountId,
+            payload.account?.dead === true ? "dead" : "live",
+            payload.error ?? "",
+          ]),
+          action: `pipedream:${kind || "UPDATE"}`,
+          detail: { accountId, slug },
+        });
+        if (!fresh) return new Response("ok (duplicate)");
+
         if (kind.includes("DELET") || kind.includes("DISCONNECT")) {
           const { error: deleteError } = await supabaseAdmin
             .from("pipedream_accounts")
