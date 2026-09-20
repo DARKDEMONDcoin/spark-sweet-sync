@@ -65,34 +65,38 @@ function PricingPage() {
   if (!selected) return null;
   return (
     <PageShell className="bg-background">
-      {/* موبايل — بنمط صفحة الترقية: عنوان، بطاقة مزايا، اختيار الباقة، زر داكن */}
-      <section className="px-4 pb-10 pt-[5.5rem] md:hidden">
+      {/* موبايل — نفس تكوين صفحات الترقية العالمية: عنوان كبير، بطاقة مزايا، اختيار الباقة، زر داكن */}
+      <section className="px-5 pb-14 md:hidden" style={{ paddingTop: "6.75rem" }}>
         <div className="mx-auto w-full max-w-md">
-          <div className="flex items-end justify-between gap-3">
-            <div>
-              <span className="text-xs font-bold text-primary">أسعار واضحة</span>
-              <h1 className="mt-1 font-display text-[1.8rem] leading-tight font-black">
-                اختر باقتك وابدأ اليوم
-              </h1>
-            </div>
-            <RegionPicker className="shrink-0 [&>span:nth-child(2)]:hidden" />
+          <h1 className="text-center font-display text-[2rem] font-black leading-[1.25]">
+            ارتقِ بمشروعك
+            <br />
+            مع فريق سهل
+          </h1>
+          <div className="mt-4 flex justify-center">
+            <RegionPicker className="[&>span:first-child]:hidden" />
           </div>
 
-          <div className="mt-6 rounded-[1.75rem] border border-border bg-card px-5 py-2 shadow-card">
-            <ul className="divide-y divide-border/70">
+          <div className="mt-8 rounded-[2rem] border border-border bg-card px-6 py-3 shadow-card">
+            <ul>
               {selected.perks.map((perk, i) => {
                 const Icon = perkIcons[i % perkIcons.length] ?? Sparkles;
                 return (
-                  <li key={perk} className="flex items-center justify-between gap-3 py-4">
-                    <span className="min-w-0 text-[0.95rem] font-semibold">{perk}</span>
-                    <Icon className="size-5 shrink-0 text-foreground" strokeWidth={1.8} />
+                  <li
+                    key={perk}
+                    className="flex items-center justify-between gap-4 py-[1.15rem]"
+                  >
+                    <span className="min-w-0 text-[1.02rem] font-semibold leading-7">
+                      {perk}
+                    </span>
+                    <Icon className="size-[1.4rem] shrink-0 text-foreground" strokeWidth={1.6} />
                   </li>
                 );
               })}
             </ul>
           </div>
 
-          <div className="mt-5 grid gap-3" role="radiogroup" aria-label="اختر الباقة">
+          <div className="mt-7 grid gap-4" role="radiogroup" aria-label="اختر الباقة">
             {plans.map((plan) => {
               const active = mobilePlan === plan.id;
               return (
@@ -102,48 +106,47 @@ function PricingPage() {
                   role="radio"
                   aria-checked={active}
                   onClick={() => setMobilePlan(plan.id)}
-                  className={`flex min-h-[4.5rem] items-center justify-between gap-3 rounded-2xl border bg-card px-5 text-right transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                    active
-                      ? "border-foreground shadow-card"
-                      : "border-border text-muted-foreground"
+                  className={`flex items-center justify-between gap-4 rounded-[1.4rem] border-2 bg-card px-6 py-5 text-right transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    active ? "border-foreground shadow-card" : "border-border/80"
                   }`}
                 >
                   <span className="min-w-0">
                     <span className="flex flex-wrap items-center gap-2">
-                      <span
-                        className={`text-sm font-bold ${active ? "text-foreground" : ""}`}
-                      >
-                        باقة {plan.name}
-                      </span>
+                      <span className="text-[1.05rem] font-bold">باقة {plan.name}</span>
                       {plan.highlight ? (
-                        <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[0.68rem] font-bold text-primary">
+                        <span className="rounded-full bg-primary/12 px-3 py-1 text-[0.72rem] font-bold text-primary">
                           الأكثر اختياراً
                         </span>
                       ) : null}
                     </span>
-                    <span
-                      className={`mt-1 block font-display text-lg font-black ${
-                        active ? "text-foreground" : "text-foreground/70"
-                      }`}
-                    >
-                      {plan.monthly === null
-                        ? "حسب الطلب"
-                        : `${priceOf(plan, false, country)} ${cur.label} / شهرياً`}
+                    <span className="mt-1.5 block font-display text-[1.35rem] font-black leading-none">
+                      {plan.monthly === null ? (
+                        "حسب الطلب"
+                      ) : (
+                        <>
+                          {priceOf(plan, false, country)}{" "}
+                          <span className="text-sm font-semibold text-muted-foreground">
+                            {cur.label} / شهرياً
+                          </span>
+                        </>
+                      )}
                     </span>
                   </span>
                   <span
-                    className={`grid size-6 shrink-0 place-items-center rounded-full border-2 transition-colors ${
+                    className={`grid size-7 shrink-0 place-items-center rounded-full border-[2.5px] transition-colors ${
                       active ? "border-foreground" : "border-border"
                     }`}
                   >
-                    {active ? <span className="size-3 rounded-full bg-foreground" /> : null}
+                    {active ? (
+                      <span className="size-3.5 rounded-full bg-foreground" />
+                    ) : null}
                   </span>
                 </button>
               );
             })}
           </div>
 
-          <p className="mt-5 text-center text-xs leading-relaxed text-muted-foreground">
+          <p className="mt-7 text-center text-[0.85rem] leading-6 text-muted-foreground">
             {selected.monthly === null
               ? "حل مخصص لحجم فريقك وعلاماتك — تحدّث معنا وسنجهّز عرضاً يناسبك."
               : "١٤ يوماً مجاناً بكل المزايا، بدون بطاقة. يمكن الإلغاء في أي وقت."}
@@ -152,7 +155,7 @@ function PricingPage() {
           {selected.id === "scale" ? (
             <Link
               to="/contact"
-              className="mt-4 block min-h-14 rounded-2xl bg-foreground px-5 py-4 text-center text-base font-bold text-background"
+              className="mt-5 block w-full rounded-2xl bg-foreground py-[1.15rem] text-center text-[1.05rem] font-bold text-background transition-transform active:scale-[0.98]"
             >
               {selected.cta}
             </Link>
@@ -160,16 +163,28 @@ function PricingPage() {
             <Link
               to="/auth"
               search={{ mode: "signup", plan: selected.id }}
-              className="mt-4 block min-h-14 rounded-2xl bg-foreground px-5 py-4 text-center text-base font-bold text-background"
+              className="mt-5 block w-full rounded-2xl bg-foreground py-[1.15rem] text-center text-[1.05rem] font-bold text-background transition-transform active:scale-[0.98]"
             >
               {selected.cta}
             </Link>
           )}
 
-          <p className="mt-3 flex items-center justify-center gap-1.5 text-[0.7rem] font-semibold text-muted-foreground">
-            <ShieldCheck className="size-3.5 text-jade-deep" /> بدون بطاقة · إلغاء فوري · بيانات
+          <p className="mt-4 flex items-center justify-center gap-1.5 text-[0.75rem] font-semibold text-muted-foreground">
+            <ShieldCheck className="size-4 text-jade-deep" /> بدون بطاقة · إلغاء فوري · بيانات
             مشفّرة
           </p>
+
+          <nav className="mt-8 flex items-center justify-center gap-8 text-[0.85rem] font-medium text-muted-foreground">
+            <Link to="/terms" className="transition-colors hover:text-foreground">
+              الشروط
+            </Link>
+            <Link to="/privacy" className="transition-colors hover:text-foreground">
+              الخصوصية
+            </Link>
+            <Link to="/refunds" className="transition-colors hover:text-foreground">
+              الاسترداد
+            </Link>
+          </nav>
         </div>
       </section>
 
