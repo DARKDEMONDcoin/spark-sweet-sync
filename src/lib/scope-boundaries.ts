@@ -3,7 +3,7 @@
  * كل خدمة يملكها موظف واحد فقط: النشر على السوشيال لسِراج وحده، والسيو لنور،
  * والبريد والمواعيد لإيفا… إلخ. إن جاء الطلب لغير صاحبه يوجّه الموظف المستخدم فوراً.
  */
-import { detectHandoff } from "./handoff";
+import { detectHandoff, isDecisivelyMine } from "./handoff";
 import { employeeDirectory, type EmployeeId } from "./team-knowledge";
 
 const OWNERSHIP: Record<string, string> = {
@@ -40,6 +40,12 @@ export function scopeBoundaryBlock(employeeId: string, message?: string): string
     "إن كان في الطلب جزء يخصك فعلاً: نفّذ جزءك أنت فقط، وحوّل الباقي للزميل بنفس الطريقة.",
     "جملة التحويل لا تُكتب أبداً داخل مخرج يُرسل لطرف ثالث (نص رسالة أو منشور أو مقال): إمّا أن تحوّل بسطر واحد بلا مخرج، أو تسلّم المخرج نظيفاً وتذكر التحويل بعده منفصلاً.",
   ];
+
+  if (message && isDecisivelyMine(message, employeeId)) {
+    lines.push(
+      "تنبيه لهذه الرسالة تحديداً: المستخدم طلب منك خدمة من صميم اختصاصك بفعل أمر صريح. نفّذها بنفسك كاملة، وممنوع منعاً باتاً تحويلها إلى أي زميل مهما ورد في الطلب من أسماء منصات.",
+    );
+  }
 
   const handoff = message ? detectHandoff(message, employeeId) : null;
   if (handoff) {
