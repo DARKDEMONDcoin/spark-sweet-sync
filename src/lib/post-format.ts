@@ -10,7 +10,7 @@
 const CUT_FROM = [
   /^\s*#{0,6}\s*(?:📸|📷)?\s*صور\s+من\s+موقعك/u,
   /^\s*#{0,6}\s*\**\s*افتراضات\s*[:：]?/u,
-  /^\s*#{0,6}\s*\**\s*(?:ملاحظة للمستخدم|تعليمات)\s*[:：]/u,
+  /^\s*#{0,6}\s*\**\s*(?:ملاحظة\s+(?:للمستخدم|من\s+\S+)|تعليمات)\s*[:：]/u,
   // أقسام حوار الشات — لا تُنشر أبداً داخل المنشور.
   /^\s*#{0,6}\s*\**\s*الخطوة\s+التالية\s*\**\s*[:：]?\s*$/u,
   /^\s*#{0,6}\s*\**\s*الخطوات\s+التالية\s*\**\s*[:：]?\s*$/u,
@@ -84,6 +84,38 @@ export function sanitizePostBody(input: string | null | undefined): string {
 
   return text
     .replace(/[ \t]+$/gm, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+/**
+ * يحذف قسم «المخرج» الذي يكرّر نصاً ظهر قبله في الرد نفسه.
+ * النموذج أحياناً يكتب المخرج في الصدر ثم يعيده تحت عنوان «المخرج» حرفياً،
+ * فيرى المالك نفس النص مرتين. نُبقي أول ظهور فقط.
+ */
+const ECHO_HEADING =
+  /^\s*(?:#{1,6}\s*)?\**\s*(?:المخرج|المخرج\s+النهائي|النص\s+النهائي|النسخة\s+النهائية)\s*\**\s*[:：]?\s*$/u;
+
+const normalizeEcho = (value: string) =>
+  value
+    .replace(/\s+/g, " ")
+    .replace(/[*_#>`]/g, "")
+    .trim()
+    .toLowerCase();
+
+export function dropEchoedSection(input: string): string {
+  const lines = input.split("\n");
+  const at = lines.findIndex((line) => ECHO_HEADING.test(line));
+  if (at < 0) return input;
+  const before = normalizeEcho(lines.slice(0, at).join("\n"));
+  const section = lines.slice(at + 1);
+  const meaningful = section.filter((line) => normalizeEcho(line).length > 24);
+  if (!meaningful.length) return input;
+  const echoed = meaningful.filter((line) => before.includes(normalizeEcho(line)));
+  if (echoed.length / meaningful.length < 0.8) return input;
+  return lines
+    .slice(0, at)
+    .join("\n")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
