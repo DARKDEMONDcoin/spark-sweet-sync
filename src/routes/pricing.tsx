@@ -22,6 +22,7 @@ import { plans, priceOf, currencyOf, yearlyDiscount } from "@/data/pricing";
 import { useRegion } from "@/hooks/use-region";
 import { RegionPicker } from "@/components/site/Portrait";
 import { Button } from "@/components/ui/button";
+import { LogoMark } from "@/components/site/LogoMark";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -72,7 +73,9 @@ function PricingPage() {
         <div className="sahl-upgrade-dots" aria-hidden="true" />
         <div className="sahl-upgrade-inner">
           <div className="sahl-upgrade-topbar">
-            <span aria-hidden="true" />
+            <span className="sahl-upgrade-brand" aria-hidden="true">
+              <LogoMark size={18} />
+            </span>
             <Button asChild variant="ghost" size="icon" className="sahl-upgrade-close">
               <Link to="/" aria-label="إغلاق صفحة الأسعار">
                 <X strokeWidth={1.8} />
@@ -125,40 +128,47 @@ function PricingPage() {
               </ul>
             </div>
 
-            <div className="sahl-upgrade-billing" role="radiogroup" aria-label="دورة الفوترة">
-              <Button
-                type="button"
-                variant="ghost"
-                role="radio"
-                aria-checked={!yearly}
-                onClick={() => setYearly(false)}
-                className={!yearly ? "is-selected" : undefined}
-              >
-                <span className="sahl-upgrade-radio" aria-hidden="true"><i /></span>
-                <span className="sahl-upgrade-cycle">شهري</span>
-                <strong>{selected.monthly === null ? "عرض مخصص" : `${priceOf(selected, false, country)} ${cur.label}`}</strong>
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                role="radio"
-                aria-checked={yearly}
-                onClick={() => setYearly(true)}
-                className={yearly ? "is-selected" : undefined}
-              >
-                <span className="sahl-upgrade-radio" aria-hidden="true"><i /></span>
-                <span className="sahl-upgrade-cycle">سنوي <small>وفّر {yearlyDiscount * 100}%</small></span>
-                <strong>{selected.monthly === null ? "عرض مخصص" : `${priceOf(selected, true, country)} ${cur.label}`}</strong>
-              </Button>
-            </div>
+            {selected.monthly === null ? (
+              <div className="sahl-upgrade-custom-offer">
+                <strong>عرض مخصص حسب احتياجك</strong>
+                <span>حل مرن حسب حجم فريقك وفروعك</span>
+              </div>
+            ) : (
+              <>
+                <div className="sahl-upgrade-billing" role="radiogroup" aria-label="دورة الفوترة">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    role="radio"
+                    aria-checked={!yearly}
+                    onClick={() => setYearly(false)}
+                    className={!yearly ? "is-selected" : undefined}
+                  >
+                    <span className="sahl-upgrade-radio" aria-hidden="true"><i /></span>
+                    <span className="sahl-upgrade-cycle">شهري</span>
+                    <strong>{`${priceOf(selected, false, country)} ${cur.label}`}</strong>
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    role="radio"
+                    aria-checked={yearly}
+                    onClick={() => setYearly(true)}
+                    className={yearly ? "is-selected" : undefined}
+                  >
+                    <span className="sahl-upgrade-radio" aria-hidden="true"><i /></span>
+                    <span className="sahl-upgrade-cycle">سنوي <small>وفّر {yearlyDiscount * 100}%</small></span>
+                    <strong>{`${priceOf(selected, true, country)} ${cur.label}`}</strong>
+                  </Button>
+                </div>
 
-            <p className="sahl-upgrade-note">
-              {selected.monthly === null
-                ? "عرض مرن حسب عدد الفروع والفريق، مع إعداد ودعم مخصصين."
-                : yearly
-                  ? `${priceOf(selected, true, country)} ${cur.label} شهرياً، تُدفع سنوياً بعد التجربة المجانية.`
-                  : `${priceOf(selected, false, country)} ${cur.label} شهرياً بعد ١٤ يوماً مجاناً.`}
-            </p>
+                <p className="sahl-upgrade-note">
+                  {yearly
+                    ? `${priceOf(selected, true, country)} ${cur.label} شهرياً، تُدفع سنوياً بعد التجربة المجانية.`
+                    : `${priceOf(selected, false, country)} ${cur.label} شهرياً بعد ١٤ يوماً مجاناً.`}
+                </p>
+              </>
+            )}
 
             <Button asChild className="sahl-upgrade-cta">
               {selected.id === "scale" ? (

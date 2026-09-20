@@ -347,16 +347,9 @@
 }
 
 /* شاشة ترقية الأسعار على الهاتف */
-@keyframes sahl-pricing-dots-drift {
-  0%,
-  100% {
-    background-position: 0 0, 14px 14px, 7px 21px;
-    opacity: 0.48;
-  }
-  50% {
-    background-position: 14px 7px, 0 21px, 21px 7px;
-    opacity: 0.72;
-  }
+@keyframes sahl-pricing-wave-run {
+  from { mask-position: 180% 0; }
+  to { mask-position: -80% 0; }
 }
 
 @media (max-width: 767px) {
@@ -387,13 +380,30 @@
     z-index: -1;
     inset: 0;
     background-image:
-      radial-gradient(circle, color-mix(in oklab, var(--primary) 35%, transparent) 1.1px, transparent 1.6px),
-      radial-gradient(circle, color-mix(in oklab, var(--gold) 32%, transparent) 1px, transparent 1.5px),
-      radial-gradient(circle, color-mix(in oklab, var(--jade) 30%, transparent) 1px, transparent 1.5px);
-    background-position: 0 0, 14px 14px, 7px 21px;
-    background-size: 42px 42px, 42px 42px, 42px 42px;
+      radial-gradient(circle, color-mix(in oklab, var(--primary) 27%, transparent) 1px, transparent 1.45px),
+      radial-gradient(circle, color-mix(in oklab, var(--gold) 25%, transparent) 1px, transparent 1.45px),
+      radial-gradient(circle, color-mix(in oklab, var(--jade) 25%, transparent) 1px, transparent 1.45px);
+    background-position: 0 0, 14px 14px, 28px 28px;
+    background-size: 42px 42px;
     mask-image: linear-gradient(to bottom, black, transparent 92%);
-    animation: sahl-pricing-dots-drift 12s ease-in-out infinite;
+    opacity: 0.62;
+  }
+
+  .sahl-upgrade-dots::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(circle, color-mix(in oklab, var(--primary) 64%, transparent) 2px, transparent 2.8px),
+      radial-gradient(circle, color-mix(in oklab, var(--gold) 60%, transparent) 2px, transparent 2.8px),
+      radial-gradient(circle, color-mix(in oklab, var(--jade) 58%, transparent) 2px, transparent 2.8px);
+    background-position: 0 0, 14px 14px, 28px 28px;
+    background-size: 42px 42px;
+    mask-image: linear-gradient(125deg, transparent 34%, black 44%, black 52%, transparent 62%);
+    mask-size: 230% 100%;
+    mask-repeat: no-repeat;
+    opacity: 0.7;
+    animation: sahl-pricing-wave-run 2.35s linear infinite;
   }
 
   .sahl-upgrade-inner {
@@ -410,6 +420,25 @@
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     min-height: 2rem;
+  }
+
+  .sahl-upgrade-brand {
+    grid-column: 1;
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border: 1px solid color-mix(in oklab, var(--primary) 20%, var(--border));
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--card) 72%, transparent);
+    opacity: 0.68;
+    backdrop-filter: blur(12px);
+  }
+
+  .sahl-upgrade-brand img {
+    width: 1.1rem;
+    height: 1.1rem;
+    object-fit: contain;
   }
 
   .sahl-upgrade-close {
@@ -635,6 +664,30 @@
     white-space: nowrap;
   }
 
+  .sahl-upgrade-custom-offer {
+    display: grid;
+    place-items: center;
+    min-height: 3.25rem;
+    margin-top: 0.45rem;
+    padding: 0.45rem 0.7rem;
+    border: 1.5px solid color-mix(in oklab, var(--primary) 66%, var(--border));
+    border-radius: 0.78rem;
+    background: color-mix(in oklab, var(--primary) 5%, var(--card));
+    text-align: center;
+  }
+
+  .sahl-upgrade-custom-offer strong {
+    font-family: "Almarai", var(--font-sans);
+    font-size: 0.82rem;
+    font-weight: 800;
+  }
+
+  .sahl-upgrade-custom-offer span {
+    color: var(--muted-foreground);
+    font-size: 0.6rem;
+    font-weight: 600;
+  }
+
   .sahl-upgrade-note {
     margin-top: 0.28rem;
     color: var(--muted-foreground);
@@ -682,8 +735,8 @@
     gap: 0.35rem;
     min-height: 1rem;
     color: var(--muted-foreground);
-    font-size: 0.5rem;
-    font-weight: 600;
+    font-size: 0.64rem;
+    font-weight: 700;
     line-height: 1;
   }
 }
@@ -695,6 +748,7 @@
 
   .sahl-upgrade-topbar { min-height: 1.65rem; }
   .sahl-upgrade-close { width: 1.65rem; height: 1.65rem; }
+  .sahl-upgrade-brand { width: 1.65rem; height: 1.65rem; }
   .sahl-upgrade-heading p { display: none; }
   .sahl-upgrade-heading h1 { margin-top: 0; font-size: 1.22rem; }
   .sahl-upgrade-tabs { margin-top: 0.28rem; }
@@ -707,15 +761,23 @@
   .sahl-upgrade-perks svg { width: 0.76rem; height: 0.76rem; }
   .sahl-upgrade-billing { margin-top: 0.28rem; }
   .sahl-upgrade-billing button { height: 2.9rem; }
+  .sahl-upgrade-custom-offer { min-height: 2.9rem; margin-top: 0.28rem; padding-block: 0.28rem; }
+  .sahl-upgrade-custom-offer strong { font-size: 0.74rem; }
+  .sahl-upgrade-custom-offer span { font-size: 0.54rem; }
   .sahl-upgrade-note { margin-top: 0.2rem; font-size: 0.52rem; }
   .sahl-upgrade-cta { height: 2.35rem; margin-top: 0.25rem; }
   .sahl-upgrade-trust { margin-top: 0.2rem; }
-  .sahl-upgrade-legal { min-height: 0.78rem; font-size: 0.46rem; }
+  .sahl-upgrade-legal { min-height: 0.9rem; font-size: 0.58rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .sahl-upgrade-dots {
     animation: none;
+  }
+
+  .sahl-upgrade-dots::after {
+    animation: none;
+    mask-position: 50% 0;
   }
 }
 
