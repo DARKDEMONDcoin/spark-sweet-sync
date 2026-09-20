@@ -147,7 +147,27 @@ export async function runDueSocialPosts(admin: Admin, now = new Date()): Promise
   if (!due?.length) return [];
 
   const report: QueueReport[] = [];
+  // قاطع دائرة لكل منصة: بعد فشلين متتاليين في نفس الدفعة نتوقف عن مهاجمة المنصة
+  // ونؤجّل بقية منشوراتها عشر دقائق بدل استهلاك المحاولات على عطل مؤكد.
+  const failures = new Map<string, number>();
+  const BREAKER_THRESHOLD = 2;
+  const BREAKER_DELAY_MS = 10 * 60 * 1000;
+
   for (const row of due) {
+    const provider = row.provider ?? "—";
+    if ((failures.get(provider) ?? 0) >= BREAKER_THRESHOLD) {
+      await admin
+        .from("social_posts")
+        .update({
+          locked_at: null,
+          scheduled_at: new Date(now.getTime() + BREAKER_DELAY_MS).toISOString(),
+          last_error: "تأجيل مؤقت: المنصة متعطلة في هذه الدورة.",
+        })
+        .eq("id", row.id);
+      report.push({ id: row.id, provider, status: "retry", error: "قاطع الدائرة مفعّل للمنصة." });
+      continue;
+    }
+
     // حجز ذرّي: التحديث ينجح لمرة واحدة فقط لأن الشرط يتضمن الحجز السابق.
     const { data: claimed } = await admin
       .from("social_posts")
