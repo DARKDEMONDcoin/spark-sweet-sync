@@ -129,13 +129,25 @@ export async function verifyState(
 /**
  * أصل ثابت لرابط العودة — لأن نطاق المعاينة يتغيّر (lovableproject.com / id-preview)
  * بينما لوحة ميتا تقبل روابط مسجّلة فقط. نستخدم النطاق الثابت للمشروع دائماً.
+ * يُضبط عبر META_REDIRECT_ORIGIN؛ القيمة أدناه احتياطية فقط لبيئة المعاينة.
  */
-export const META_CANONICAL_ORIGIN =
-  "https://project--541025ee-163e-49a6-8c43-600f36bcb147.lovable.app";
+const META_FALLBACK_ORIGIN = "https://project--541025ee-163e-49a6-8c43-600f36bcb147.lovable.app";
+
+export function metaCanonicalOrigin(): string {
+  const configured = process.env["META_REDIRECT_ORIGIN"] || process.env["PUBLIC_SITE_ORIGIN"] || "";
+  try {
+    if (configured) return new URL(configured).origin;
+  } catch {
+    console.error("[meta] META_REDIRECT_ORIGIN غير صالح — استُخدم الأصل الاحتياطي.");
+  }
+  return META_FALLBACK_ORIGIN;
+}
+
+/** @deprecated استخدم metaCanonicalOrigin() — يبقى للتوافق مع الاستدعاءات القديمة. */
+export const META_CANONICAL_ORIGIN = META_FALLBACK_ORIGIN;
 
 export function metaRedirectUri(_origin?: string): string {
-  const override = process.env["META_REDIRECT_ORIGIN"];
-  return `${new URL(override || META_CANONICAL_ORIGIN).origin}/api/public/meta/callback`;
+  return `${metaCanonicalOrigin()}/api/public/meta/callback`;
 }
 
 export function metaAuthorizeUrl(
