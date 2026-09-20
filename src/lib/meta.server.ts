@@ -486,10 +486,60 @@ export async function metaTarget(
   kind: "facebook" | "instagram",
   pageId?: string,
 ): Promise<MetaConnection | null> {
+  await refreshMetaTokensIfExpiring(admin, workspaceId);
   const all = await listMetaConnections(admin, workspaceId, kind);
   const usable = all.filter((c) => (kind === "instagram" ? Boolean(c.igUserId) : true));
   if (pageId) return usable.find((c) => c.pageId === pageId) ?? null;
   return usable.find((c) => c.status === "connected") ?? usable[0] ?? null;
+}
+
+/** عتبة التجديد الاستباقي: نجدّد قبل انتهاء التوكن بعشرة أيام. */
+export const META_REFRESH_WINDOW_MS = 10 * 24 * 60 * 60 * 1000;
+
+export function metaTokenNeedsRefresh(expiresAt: string | null, now = Date.now()): boolean {
+  if (!expiresAt) return false;
+  const expiry = Date.parse(expiresAt);
+  if (Number.isNaN(expiry)) return false;
+  return expiry - now <= META_REFRESH_WINDOW_MS;
+}
+
+/**
+ * تجديد استباقي لتوكن ميتا الطويل قبل انتهائه، بدل اكتشاف الانتهاء بخطأ 190 أثناء النشر.
+ * لا يرمي أخطاء: الفشل يُسجَّل فقط ويترك التوكن الحالي كما هو.
+ */
+export async function refreshMetaTokensIfExpiring(
+  admin: Admin,
+  workspaceId: string,
+): Promise<boolean> {
+  try {
+    const { data, error } = await admin
+      .from("meta_connections")
+      .select("user_access_token, token_expires_at")
+      .eq("workspace_id", workspaceId)
+      .eq("status", "connected")
+      .limit(1);
+    if (error || !data?.length) return false;
+    const row = data[0] as { user_access_token: string | null; token_expires_at: string | null };
+    if (!row.user_access_token || !metaTokenNeedsRefresh(row.token_expires_at)) return false;
+
+    const config = await metaConfig();
+    if (!config) return false;
+
+    const fresh = await longLivedToken(config, row.user_access_token);
+    const pages = await fetchPages(fresh.token);
+    if (!pages.length) return false;
+    const scopes = await grantedScopes(fresh.token).catch(() => [] as string[]);
+    await saveConnections(admin, workspaceId, {
+      userToken: fresh.token,
+      expiresAt: fresh.expiresAt,
+      scopes,
+      pages,
+    });
+    return true;
+  } catch (refreshError) {
+    console.error("[meta] proactive token refresh failed", refreshError);
+    return false;
+  }
 }
 
 /** هل يوجد مسار ميتا مباشر جاهز لهذه المنصة؟ (يقرر التوجيه الهجين) */
