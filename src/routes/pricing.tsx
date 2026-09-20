@@ -62,104 +62,112 @@ function PricingPage() {
   const selected = plans.find((plan) => plan.id === mobilePlan);
   if (!selected) return null;
   return (
-    <PageShell
-      className="h-svh overflow-hidden bg-background md:min-h-screen md:h-auto md:overflow-visible"
-      hideFooterOnMobile
-    >
-      <section className="flex h-svh flex-col px-4 pb-4 pt-[5.5rem] md:hidden">
-        <div className="mx-auto flex min-h-0 w-full max-w-md flex-1 flex-col">
+    <PageShell className="bg-background">
+      {/* موبايل — بنمط صفحة الترقية: عنوان، بطاقة مزايا، اختيار الباقة، زر داكن */}
+      <section className="px-4 pb-10 pt-[5.5rem] md:hidden">
+        <div className="mx-auto w-full max-w-md">
           <div className="flex items-end justify-between gap-3">
             <div>
               <span className="text-xs font-bold text-primary">أسعار واضحة</span>
-              <h1 className="mt-1 font-display text-[1.7rem] leading-tight font-black">
-                اختر فريقك وابدأ اليوم
+              <h1 className="mt-1 font-display text-[1.8rem] leading-tight font-black">
+                اختر باقتك وابدأ اليوم
               </h1>
             </div>
             <RegionPicker className="shrink-0 [&>span:nth-child(2)]:hidden" />
           </div>
 
-          <div
-            role="tablist"
-            aria-label="اختر الباقة"
-            className="mt-4 grid grid-cols-3 rounded-2xl border border-border bg-card/75 p-1 shadow-card backdrop-blur-xl"
-          >
-            {plans.map((plan) => (
-              <button
-                key={plan.id}
-                type="button"
-                role="tab"
-                aria-selected={mobilePlan === plan.id}
-                onClick={() => setMobilePlan(plan.id)}
-                className={`min-h-11 rounded-xl px-2 text-sm font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
-                  mobilePlan === plan.id
-                    ? "bg-foreground text-background shadow-card"
-                    : "text-muted-foreground"
-                }`}
-              >
-                {plan.name}
-              </button>
-            ))}
+          <div className="mt-6 rounded-[1.75rem] border border-border bg-card px-5 py-2 shadow-card">
+            <ul className="divide-y divide-border/70">
+              {selected.perks.map((perk, i) => {
+                const Icon = perkIcons[i % perkIcons.length];
+                return (
+                  <li key={perk} className="flex items-center justify-between gap-3 py-4">
+                    <span className="min-w-0 text-[0.95rem] font-semibold">{perk}</span>
+                    <Icon className="size-5 shrink-0 text-foreground" strokeWidth={1.8} />
+                  </li>
+                );
+              })}
+            </ul>
           </div>
 
-          <article className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden rounded-[1.75rem] border border-border bg-card/90 p-5 shadow-lift backdrop-blur-xl">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-xs font-bold text-primary">{selected.tag}</p>
-                <h2 className="mt-1 font-display text-xl font-black">باقة {selected.name}</h2>
-              </div>
-              {selected.highlight ? (
-                <span className="rounded-full bg-jade/15 px-3 py-1 text-[0.68rem] font-bold text-jade-deep">
-                  الأنسب للنمو
-                </span>
-              ) : null}
-            </div>
-
-            <div className="mt-3 flex items-end gap-2 border-b border-border pb-3">
-              <span className="font-display text-4xl font-black leading-none text-primary">
-                {priceOf(selected, false, country)}
-              </span>
-              {selected.monthly !== null ? (
-                <span className="text-xs text-muted-foreground">{cur.label} / شهرياً</span>
-              ) : (
-                <span className="text-xs text-muted-foreground">حل مخصص لحجمك</span>
-              )}
-            </div>
-
-            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{selected.desc}</p>
-            <ul className="mt-3 grid min-h-0 gap-2 overflow-hidden">
-              {selected.perks.slice(0, 4).map((perk) => (
-                <li key={perk} className="flex items-center gap-2 text-sm font-medium">
-                  <span className="grid size-5 shrink-0 place-items-center rounded-full bg-jade/15 text-jade-deep">
-                    <Check className="size-3" strokeWidth={3} />
+          <div className="mt-5 grid gap-3" role="radiogroup" aria-label="اختر الباقة">
+            {plans.map((plan) => {
+              const active = mobilePlan === plan.id;
+              return (
+                <button
+                  key={plan.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => setMobilePlan(plan.id)}
+                  className={`flex min-h-[4.5rem] items-center justify-between gap-3 rounded-2xl border bg-card px-5 text-right transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                    active
+                      ? "border-foreground shadow-card"
+                      : "border-border text-muted-foreground"
+                  }`}
+                >
+                  <span className="min-w-0">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span
+                        className={`text-sm font-bold ${active ? "text-foreground" : ""}`}
+                      >
+                        باقة {plan.name}
+                      </span>
+                      {plan.highlight ? (
+                        <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[0.68rem] font-bold text-primary">
+                          الأكثر اختياراً
+                        </span>
+                      ) : null}
+                    </span>
+                    <span
+                      className={`mt-1 block font-display text-lg font-black ${
+                        active ? "text-foreground" : "text-foreground/70"
+                      }`}
+                    >
+                      {plan.monthly === null
+                        ? "حسب الطلب"
+                        : `${priceOf(plan, false, country)} ${cur.label} / شهرياً`}
+                    </span>
                   </span>
-                  <span className="truncate">{perk}</span>
-                </li>
-              ))}
-            </ul>
+                  <span
+                    className={`grid size-6 shrink-0 place-items-center rounded-full border-2 transition-colors ${
+                      active ? "border-foreground" : "border-border"
+                    }`}
+                  >
+                    {active ? <span className="size-3 rounded-full bg-foreground" /> : null}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
 
-            <div className="mt-auto pt-3">
-              {selected.id === "scale" ? (
-                <Link
-                  to="/contact"
-                  className="block min-h-12 rounded-full bg-foreground px-5 py-3 text-center font-bold text-background"
-                >
-                  {selected.cta}
-                </Link>
-              ) : (
-                <Link
-                  to="/auth"
-                  search={{ mode: "signup", plan: selected.id }}
-                  className="block min-h-12 rounded-full bg-foreground px-5 py-3 text-center font-bold text-background"
-                >
-                  {selected.cta}
-                </Link>
-              )}
-              <p className="mt-2 flex items-center justify-center gap-1.5 text-[0.68rem] font-semibold text-muted-foreground">
-                <ShieldCheck className="size-3.5 text-jade-deep" /> بدون بطاقة · إلغاء فوري · بيانات
-                مشفّرة
-              </p>
-            </div>
-          </article>
+          <p className="mt-5 text-center text-xs leading-relaxed text-muted-foreground">
+            {selected.monthly === null
+              ? "حل مخصص لحجم فريقك وعلاماتك — تحدّث معنا وسنجهّز عرضاً يناسبك."
+              : "١٤ يوماً مجاناً بكل المزايا، بدون بطاقة. يمكن الإلغاء في أي وقت."}
+          </p>
+
+          {selected.id === "scale" ? (
+            <Link
+              to="/contact"
+              className="mt-4 block min-h-14 rounded-2xl bg-foreground px-5 py-4 text-center text-base font-bold text-background"
+            >
+              {selected.cta}
+            </Link>
+          ) : (
+            <Link
+              to="/auth"
+              search={{ mode: "signup", plan: selected.id }}
+              className="mt-4 block min-h-14 rounded-2xl bg-foreground px-5 py-4 text-center text-base font-bold text-background"
+            >
+              {selected.cta}
+            </Link>
+          )}
+
+          <p className="mt-3 flex items-center justify-center gap-1.5 text-[0.7rem] font-semibold text-muted-foreground">
+            <ShieldCheck className="size-3.5 text-jade-deep" /> بدون بطاقة · إلغاء فوري · بيانات
+            مشفّرة
+          </p>
         </div>
       </section>
 
