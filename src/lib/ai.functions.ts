@@ -1214,7 +1214,8 @@ export async function runEmployeeTurn(
       const head = postBody.slice(0, 40);
       if (postBody.length > 60 && head && !reply.includes(head)) {
         const note = reply.trim();
-        reply = note ? `${postBody}\n\n---\n\n**ملاحظة للمستخدم:** ${note}` : postBody;
+        // «ملاحظة للمستخدم» تسمية داخلية لا يليق أن يقرأها المالك — نكتبها باسم الموظف.
+        reply = note ? `${postBody}\n\n---\n\n**ملاحظة من ${persona.name}:** ${note}` : postBody;
       }
     }
 
