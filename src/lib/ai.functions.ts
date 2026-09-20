@@ -1051,6 +1051,57 @@ export async function runEmployeeTurn(
       }
     }
 
+    // وعد بلا تسليم: الموظف يقول «جهّزت لك…» ثم لا يُرجع أي مخرج، فيضيع النص كله
+    // ولا تظهر مهمة في الموافقات. محاولة إصلاح واحدة تطلب المخرج نفسه حرفياً.
+    const promisedOnly =
+      intent === "work" &&
+      !deliverables.length &&
+      !needsConnection &&
+      !pendingAction &&
+      reply.trim().length < 700 &&
+      /(جهّزت|جهزت|أعددت|اعددت|كتبت|حضّرت|حضرت|صغت|بالأسفل|فيما يلي)/.test(reply);
+    if (promisedOnly) {
+      try {
+        const repaired = await freeChat(
+          apiKey,
+          [
+            { role: "system", content: system },
+            { role: "user", content: userTurn },
+            { role: "assistant", content: reply },
+            {
+              role: "user",
+              content:
+                'وعدت بمخرج ولم تُسلّمه. أعد الآن JSON صالحاً فقط بالبنية: {"reply":"سطر واحد يقدّم المخرج","deliverable":{"title":"عنوان قصير","kind":"نوع المخرج","channel":"القناة","body":"نص المخرج الكامل جاهزاً للنسخ بلا أي شرح أو وعود"}} — لا تعتذر ولا تشرح، النص الكامل داخل body.',
+            },
+          ],
+          { json: true, timeoutMs: 40_000, maxTokens: 1800, budgetMs: 55_000 },
+        );
+        const parsedFix = JSON.parse(
+          repaired
+            .replace(/^```(?:json)?\s*/i, "")
+            .replace(/```\s*$/i, "")
+            .trim(),
+        ) as { reply?: string; deliverable?: Deliverable | null };
+        const fixed = parsedFix?.deliverable;
+        if (fixed?.title && fixed.body) {
+          deliverables = [
+            fixed.channel
+              ? fixed
+              : askedTargets[0]
+                ? { ...fixed, channel: askedTargets[0] }
+                : fixed,
+          ];
+          if (typeof parsedFix.reply === "string" && parsedFix.reply.trim())
+            reply = parsedFix.reply.trim();
+        }
+      } catch (error) {
+        console.warn(
+          "[chat] deliverable repair skipped:",
+          error instanceof Error ? error.message : error,
+        );
+      }
+    }
+
     // في المحادثة الحرة (سؤال/دردشة) لا مخرجات ولا طلبات ربط — إجابة فقط.
     if (intent !== "work") {
       deliverables = [];
